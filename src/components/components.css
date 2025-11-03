@@ -1,0 +1,32 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nav-links a {
+  margin: 0 12px;
+  text-decoration: none;
+  color: #616161;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #1E88E5;
+}
+
+.started-btn {
+  background: linear-gradient(96.56deg, #1E88E5 -34.23%, #42A5F5 108.4%);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
