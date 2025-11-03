@@ -9,15 +9,16 @@ function Navbar() {
     <div className="navbar">
       <div className="logo">
         <img src={Logo} alt="" />
-        <h2>MedLock</h2>
+        <p>MedLock</p>
       </div>
       <nav className="nav-links">
         <a href="">Features</a>
         <a href="">How it works</a>
         <a href="">About</a>
         <a href="">Support</a>
+        <button className="started-btn">Get started</button>
       </nav>
-      <button className="started-btn">Get started</button>
+     
     </div>
     </>
   )

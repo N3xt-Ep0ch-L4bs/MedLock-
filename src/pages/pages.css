@@ -1,5 +1,106 @@
 .hero {
   background: linear-gradient(90deg, #E3F2FD 0%, #FFFFFF 100%);
-  
+  padding: 10px 10%;
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
+.hero h1 {
+  font-size: 45px;
+  font-weight: bold;
+  color: #212121;
+}
+
+.hero p {
+  color: #546E7A;
+
+}
+
+.start-btn {
+  background: linear-gradient(135deg, #1E88E5 15%, #42A5F5 85%);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  color: white; 
+}
+
+.learn-btn {
+  background-color: #E3F2FD;
+  border: 2px solid #1E88E5;
+  padding: 12px 24px;
+  border-radius: 10px;
+  color: #546E7A; 
+  margin-left: 13px;
+}
+
+.role {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.role h2 {
+  color: #212121;
+  font-size: 28px;
+  margin-bottom: 32px;
+}
+
+.role p {
+  font-size: 1.1rem;
+}
+
+.role-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.patient-card, 
+.doctor-card, .pharmacy-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: left;
+  transition: transform 0.3s ease;
+  box-shadow: 0px 2px 2px 0px #00000040;
+}
+
+.patient-card {
+    border-top: 4px solid #1E88E5;
+}
+
+.patient-card, .doctor-card, .pharmacy-card h4 {
+  color: #212121;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.patient-card, .doctor-card, .pharmacy-card p {
+  color: #212121;
+  font-size: 1rem;
+}
+
+.patient-card button {
+  background: #1E88E5;
+  color: #E3F2FD;
+  padding: 7px 30px;
+  border-radius: 7px;
+  border: none;
+}
+
+.doctor-card {
+  border-top:  4px solid #43A047;
+}
+
+.doctor-card button {
+  background: linear-gradient(135deg, #43A047 15%, #66BB6A 85%);
+  color: #E3F2FD;
+  padding: 7px 30px;
+  border-radius: 7px;
+  border: none;
+}

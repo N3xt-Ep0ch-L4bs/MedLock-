@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 32px;
+  padding: 0px 32px;
 }
 
 .logo {
@@ -11,8 +11,13 @@
   gap: 5px;
 }
 
+.logo p {
+ font-weight: bold;
+ font-size: 1.2rem;
+}
+
 .nav-links a {
-  margin: 0 12px;
+  margin: 0 10px;
   text-decoration: none;
   color: #616161;
   transition: color 0.3s;
@@ -29,4 +34,5 @@
   border-radius: 8px;
   color: white;
   cursor: pointer;
+  margin-left: 16px;
 }
