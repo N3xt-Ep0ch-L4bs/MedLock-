@@ -15,7 +15,6 @@
 
 .hero p {
   color: #546E7A;
-
 }
 
 .start-btn {
@@ -43,64 +42,320 @@
 .role h2 {
   color: #212121;
   font-size: 28px;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
 }
 
-.role p {
+.role > p {
   font-size: 1.1rem;
+  margin-bottom: 40px;
+  color: #424242;
 }
 
 .role-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  gap: 24px;
   max-width: 1000px;
   margin: 0 auto;
 }
 
-.patient-card, 
-.doctor-card, .pharmacy-card {
-  background: #ffffff;
+.role-card {
+  background: #fff;
   border-radius: 12px;
   padding: 24px;
   text-align: left;
-  transition: transform 0.3s ease;
-  box-shadow: 0px 2px 2px 0px #00000040;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.patient-card {
-    border-top: 4px solid #1E88E5;
+.role-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.patient-card, .doctor-card, .pharmacy-card h4 {
+.role-card img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 12px;
+}
+
+.role-card h4 {
+  font-size: 1.4rem;
   color: #212121;
-  font-size: 0.8rem;
+  margin-bottom: 8px;
+}
+
+.role-card p {
+  color: #424242;
+  font-size: 1rem;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.role-card button {
+  color: #E3F2FD;
+  padding: 9px 30px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+}
+
+
+.role-card.patient {
+  border-top: 4px solid #1E88E5;
+}
+.role-card.patient button {
+  background: #1E88E5;
+  width: 80%;
+}
+
+.role-card.doctor {
+  border-top: 4px solid #43A047;
+}
+.role-card.doctor button {
+  background: linear-gradient(135deg, #43A047 15%, #66BB6A 85%);
+  width: 80%;
+}
+
+.role-card.pharmacy {
+  border-top: 4px solid #7E57C2;
+}
+.role-card.pharmacy button {
+  background: linear-gradient(135deg, #7E57C2 15%, #9575CD 85%);
+  width: 80%;
+}
+
+.how {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: #f9fafb;
+}
+
+.how h2 {
+  color: #212121;
+  font-size: 28px;
+  margin-bottom: 32px;
+}
+
+.how > p {
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+  color: #424242;
+}
+
+.how-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  background: #FAFBFC;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.how-card {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.patient-card, .doctor-card, .pharmacy-card p {
+.role-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.how-card img {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 12px;
+}
+
+.how-card h4 {
+  font-size: 1.2rem;
   color: #212121;
+  margin-bottom: 8px;
+}
+
+.how-card p {
+  color: #424242;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.review {
+  padding: 80px 20px;
+  text-align: center;
+  background-color: #f9fafb;
+}
+
+.review h2 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 48px;
+}
+
+.review-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.review-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stars {
+  color: #ffa726;
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+
+.review-card p {
   font-size: 1rem;
+  color: #424242;
+  margin-bottom: 24px;
+  line-height: 1.6;
+  font-style: italic;
 }
 
-.patient-card button {
-  background: #1E88E5;
+.reviewer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reviewer img {
+  width: 45px;
+  height: 45px;
+  padding: 6px;
+}
+
+.reviewer h4 {
+  font-size: 1rem;
+  color: #212121;
+  margin: 0;
+}
+
+.reviewer span {
+  font-size: 0.9rem;
+  color: #757575;
+}
+
+.active {
+  background: linear-gradient(135deg, #1E88E5 15%, #1976D2 85%);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 20px 20px;
+}
+
+.patients {
   color: #E3F2FD;
-  padding: 7px 30px;
-  border-radius: 7px;
-  border: none;
+  font-size: 1.2rem;
+  padding: 30px 30px;
+  text-align: center;
 }
 
-.doctor-card {
-  border-top:  4px solid #43A047;
+.transform {
+  padding: 80px 20px;
+  text-align: center;
+  background-color: #FFFFFF;
 }
 
-.doctor-card button {
-  background: linear-gradient(135deg, #43A047 15%, #66BB6A 85%);
-  color: #E3F2FD;
-  padding: 7px 30px;
-  border-radius: 7px;
-  border: none;
+.transform h2 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 48px;
+}
+
+.transform-cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.transform-card {
+  width: 300px;
+  border-radius: 12px;
+  padding: 28px 24px;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.transform-card h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.transform-card img {
+  width: 55%;
+  height: 55%;
+  margin-bottom: 20px;
+  padding: 0 20%;
+  display: block;
+}
+
+.transform-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #424242;
+  line-height: 1.7;
+  font-size: 0.9rem;
+}
+
+.transform-card ul li {
+  margin-bottom: 8px;
+}
+
+.transform-card.before {
+  background: linear-gradient(135deg, #F5F5F5 15%, #EEEEEE 85%);
+  color: #757575;
+  border: 2px solid #E0E0E0
+}
+
+.transform-card.after {
+  background: linear-gradient(135deg, #E3F2FD 15%, #BBDEFB 85%);
+  color: #757575;
+  border: 1px solid #bbdefb;
+}
+
+.transform-arrow {
+  font-size: 2rem;
+  color: #4caf50;
+  background: #e8f5e9;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
