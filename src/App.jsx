@@ -1,19 +1,17 @@
-import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from './components/navbar'
-import LandingPage from './pages/landingpage';
-import './App.css'
+import LandingPage from "./pages/landingpage";
+import Login from "./pages/login";
+import "./App.css";
 
 function App() {
-
   return (
-    <>
-   <div className="app">
-      <Navbar />
-      <LandingPage />
-      </div>
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
