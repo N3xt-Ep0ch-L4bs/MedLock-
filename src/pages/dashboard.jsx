@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import Logo from "../assets/logo.png"
 import RecordIcon from "../assets/stat-icon1.png";
 import PrecriptionIcon from "../assets/stat-icon2.png";
 import DoctorIcon from "../assets/stat-icon3.png";
@@ -9,14 +10,20 @@ import LisinoprilIcon from "../assets/record-icon3.png";
 import LipidIcon from "../assets/record-icon4.png";
 import ECGIcon from "../assets/record-icon5.png";
 import UrinalysisIcon from "../assets/record-icon6.png";
+import AishaDp from "../assets/kile-dp.png";
+import JamesDp from "../assets/lin-dp.png";
+import KileDp from "../assets/aisha-dp.png";
 import {
   BadgeQuestionMark,
   Bell,
   Calendar,
+  CloudUpload,
   File,
   Settings,
+  Lock,
   Search,
   LogOut,
+  Copy,
   Plus,
   ShieldCheck,
   User,
@@ -24,13 +31,47 @@ import {
   ClipboardCheck,
   Activity,
   Heart,
+  Eye,
+  UserLock,
+  UserX,
+  Pill,
 } from "lucide-react";
 import "./dashboard.css";
 
+function UploadRecordModal({ isOpen, onClose }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="close-btn" onClick={onClose}>
+          ×
+        </button>
+
+        <h2>Upload Health Record</h2>
+        <p className="subtitle">Your file will be encrypted before upload</p>
+
+        <div className="upload-box">
+          <div className="upload-icon">
+            <CloudUpload size={40} color="#3b82f6" />
+          </div>
+          <p className="upload-text">
+            <strong>Drag and drop your file here</strong>
+            <br />
+            <span>or click to browse</span>
+          </p>
+          <p className="upload-info">PDF, JPG, PNG — Max 50MB</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const Dashboard = () => {
+  const [isModalOpen, setModalOpen] = useState(false);
+
   return (
     <div className="dashboard">
-      {/* ===== LEFT SIDEBAR ===== */}
       <aside className="sidebar">
         <nav className="sidebar-nav">
           <a className="sidebar-link active">
@@ -56,18 +97,21 @@ const Dashboard = () => {
           </a>
         </nav>
         <a className="logout-link">
-         <LogOut size={18} /> Sign Out
-         </a>
+          <LogOut size={18} /> Sign Out
+        </a>
       </aside>
       <div>
-      <header className="topbar">
+        <header className="topbar">
           <div className="sidebar-header">
             <img src="/logo.png" alt="MedLock Logo" className="sidebar-logo" />
             <h1 className="sidebar-title">MedLock</h1>
           </div>
           <div className="search-box">
             <Search size={18} />
-            <input type="text" placeholder="Search your record, prescriptions…" />
+            <input
+              type="text"
+              placeholder="Search your record, prescriptions…"
+            />
           </div>
           <div className="topbar-right">
             <Bell size={20} className="icon" />
@@ -75,18 +119,21 @@ const Dashboard = () => {
             <div className="profile">EO</div>
           </div>
         </header>
-      <div className="main-area">
-        <main className="main-content">
-          <div className="welcome-card">
-            <div className="welcome-text">
-              <h2>Good afternoon, Ezekiel 👋</h2>
-              <p>Your health data is secure and encrypted</p>
-            </div>
-            <button className="upload-btn">
-              <Plus size={16} /> Upload New Record
-            </button>
-          </div>
 
+        <div className="main-area">
+          <main className="main-content">
+            <div className="welcome-card">
+              <div className="welcome-text">
+                <h2>Good afternoon, Ezekiel 👋</h2>
+                <p>Your health data is secure and encrypted</p>
+              </div>
+              <button
+                className="upload-btn"
+                onClick={() => setModalOpen(true)}
+              >
+                <Plus size={16} /> Upload New Record
+              </button>
+            </div>
         <div className="caads">
           <div className="stats-container">
             <div className="stat-card">
@@ -133,7 +180,7 @@ const Dashboard = () => {
                     <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span>🔒 Private</span>
+                    <span><Lock size={13} /> Private</span>
                     <span>⋯</span>
                 </div>
                 </div>
@@ -141,12 +188,12 @@ const Dashboard = () => {
                 <div className="record-card">
                   <img src={XrayIcon} />
                 <h4 className="record-title">Chest X-Ray</h4>
-                <p className="record-meta"><Calendar size={14}r /> Oct 15, 2024 • <File size={13} /> 7 MB</p>
+                <p className="record-meta"><Calendar size={14} /> Oct 15, 2024 • <File size={13} /> 7 MB</p>
                 <div className="record-tags">
                     <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span>🔒 Private</span>
+                    <span><Lock size={13} /> Private</span>
                     <span>⋯</span>
                 </div>
                 </div>
@@ -160,7 +207,7 @@ const Dashboard = () => {
                     <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span>🔒 Private</span>
+                    <span><Lock size={13} /> Private</span>
                     <span>⋯</span>
                 </div>
                 </div>
@@ -184,7 +231,7 @@ const Dashboard = () => {
                     <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span>🔒 Private</span>
+                    <span><Lock size={13} /> Private</span>
                     <span>⋯</span>
                 </div>
                 </div>
@@ -196,11 +243,14 @@ const Dashboard = () => {
                     <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span>🔒 Private</span>
+                    <span><Lock size={13} /> Private</span>
                     <span>⋯</span>
                 </div>
                 </div>
-        <section className="prescriptions-section">
+                    </div>
+                    </div>
+                </div>
+                </main> <section className="prescriptions-section">
           <div className="section-header">
             <h3>Active Prescriptions</h3>
             <a href="#" className="view-all">View All Prescriptions →</a>
@@ -209,7 +259,7 @@ const Dashboard = () => {
           <div className="prescription-card">
             <div className="prescription-info">
               <div className="doctor">
-                <img src="/doctor1.png" alt="Dr. Aisha" className="doctor-avatar" />
+                <img src={KileDp} alt="Dr. Aisha" className="doctor-avatar" />
                 <div>
                   <h4>Dr. Aisha Mahmoud</h4>
                   <p>Cardiologist</p>
@@ -227,11 +277,10 @@ const Dashboard = () => {
               <button>View Details</button>
             </div>
           </div>
-
           <div className="prescription-card">
             <div className="prescription-info">
               <div className="doctor">
-                <img src="/doctor2.png" alt="Dr. James" className="doctor-avatar" />
+                <img src={JamesDp} alt="Dr. James" className="doctor-avatar" />
                 <div>
                   <h4>Dr. James Lin</h4>
                   <p>Primary Care</p>
@@ -253,7 +302,7 @@ const Dashboard = () => {
           <div className="prescription-card">
             <div className="prescription-info">
               <div className="doctor">
-                <img src="/doctor1.png" alt="Dr. Aisha" className="doctor-avatar" />
+                <img src={AishaDp} alt="Dr. Aisha" className="doctor-avatar" />
                 <div>
                   <h4>Dr. Aisha Mahmoud</h4>
                   <p>Cardiologist</p>
@@ -272,20 +321,13 @@ const Dashboard = () => {
             </div>
           </div>
         </section>
-
-
-
-                    </div>
-                    </div>
-                </div>
-                </main>{/* ===== DOCTORS WITH ACCESS ===== */}
         <section className="doctors-access">
           <h3>Doctors with Access</h3>
 
           <div className="doctor-access-grid">
             <div className="doctor-card">
               <div className="doctor-info">
-                <img src="/doctor1.png" alt="Dr. Aisha" className="doctor-avatar" />
+                <img src={AishaDp} alt="Dr. Aisha" className="doctor-avatar" />
                 <div>
                   <h4>Dr. Aisha Mahmoud</h4>
                   <p>Cardiology • City Medical Center</p>
@@ -313,7 +355,7 @@ const Dashboard = () => {
 
             <div className="doctor-card">
               <div className="doctor-info">
-                <img src="/doctor2.png" alt="Dr. James" className="doctor-avatar" />
+                <img src={JamesDp} alt="Dr. James" className="doctor-avatar" />
                 <div>
                   <h4>Dr. James Lin</h4>
                   <p>Primary Care • Wellness Clinic</p>
@@ -342,12 +384,62 @@ const Dashboard = () => {
 
           <button className="grant-btn">+ Grant New Access</button>
         </section>
-
-        {/* ===== RECENT ACTIVITY ===== */}
         <section className="recent-activity">
+          <div className="recent-heading">
           <h3>Recent Activity</h3>
           <a href="#" className="view-all">View All Activity →</a>
+          </div>
+          <div className="activity-timeline">
+        <div className="activity-item">
+          <div className="activity-icon upload"><CloudUpload size={15} /></div>
+          <div className="activity-content">
+            <p>You uploaded <strong>Blood Test Results</strong></p>
+            <span className="activity-time">2 hours ago</span>
+            <div className="activity-hash">0x8f4a...ed2 <Copy size={11} /></div>
+          </div>
+        </div>
+
+        <div className="activity-item">
+          <div className="activity-icon share"><UserLock size={15} /></div>
+          <div className="activity-content">
+            <p>You shared <strong>MRI Scan</strong> with <strong>Dr. James Lin</strong></p>
+            <span className="activity-time">Yesterday at 3:45 PM</span>
+            <div className="activity-hash">0x7c2b...fa41 <Copy size={11} /></div>
+          </div>
+        </div>
+
+        <div className="activity-item">
+          <div className="activity-icon access"><Eye size={15} /></div>
+          <div className="activity-content">
+            <p><strong>Dr. Aisha Mahmoud</strong> accessed your <strong>Chest X-Ray</strong></p>
+            <span className="activity-time">Yesterday at 10:30 AM</span>
+            <div className="activity-hash">0x9e5c...a7b3 <Copy size={11} /></div>
+          </div>
+        </div>
+
+        <div className="activity-item">
+          <div className="activity-icon rx"><Pill size={15} /></div>
+          <div className="activity-content">
+            <p><strong>Dr. Aisha Mahmoud</strong> prescribed <strong>Lisinopril 10mg</strong></p>
+            <span className="activity-time">2 days ago</span>
+            <div className="activity-hash">0x3df1...c8e5 <Copy size={11} /></div>
+          </div>
+        </div>
+
+        <div className="activity-item">
+          <div className="activity-icon revoke"><UserX size={15} /></div>
+          <div className="activity-content">
+            <p>You revoked access for <strong>Dr. Sarah Chen</strong></p>
+            <span className="activity-time">3 days ago</span>
+            <div className="activity-hash">0x6b8d...f2c9 <Copy size={11} /></div>
+          </div>
+        </div>
+      </div>
         </section>
+        <UploadRecordModal
+            isOpen={isModalOpen}
+            onClose={() => setModalOpen(false)}
+          />
       </div>
     </div>
     </div>
