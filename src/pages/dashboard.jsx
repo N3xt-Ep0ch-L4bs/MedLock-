@@ -13,6 +13,7 @@ import UrinalysisIcon from "../assets/record-icon6.png";
 import AishaDp from "../assets/kile-dp.png";
 import JamesDp from "../assets/lin-dp.png";
 import KileDp from "../assets/aisha-dp.png";
+import GrantAccess from "../components/access"
 import {
   BadgeQuestionMark,
   Bell,
@@ -70,6 +71,9 @@ function UploadRecordModal({ isOpen, onClose }) {
 const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
 
+  const [isShareModalOpen, setShareModalOpen] = useState(false);
+
+
   return (
     <div className="dashboard">
       <aside className="sidebar">
@@ -103,7 +107,7 @@ const Dashboard = () => {
       <div>
         <header className="topbar">
           <div className="sidebar-header">
-            <img src="/logo.png" alt="MedLock Logo" className="sidebar-logo" />
+            <img src={Logo} alt="MedLock Logo" className="sidebar-logo" />
             <h1 className="sidebar-title">MedLock</h1>
           </div>
           <div className="search-box">
@@ -258,7 +262,7 @@ const Dashboard = () => {
 
           <div className="prescription-card">
             <div className="prescription-info">
-              <div className="doctor">
+              <div className="doc">
                 <img src={KileDp} alt="Dr. Aisha" className="doctor-avatar" />
                 <div>
                   <h4>Dr. Aisha Mahmoud</h4>
@@ -279,7 +283,7 @@ const Dashboard = () => {
           </div>
           <div className="prescription-card">
             <div className="prescription-info">
-              <div className="doctor">
+              <div className="doc">
                 <img src={JamesDp} alt="Dr. James" className="doctor-avatar" />
                 <div>
                   <h4>Dr. James Lin</h4>
@@ -301,7 +305,7 @@ const Dashboard = () => {
 
           <div className="prescription-card">
             <div className="prescription-info">
-              <div className="doctor">
+              <div className="doc">
                 <img src={AishaDp} alt="Dr. Aisha" className="doctor-avatar" />
                 <div>
                   <h4>Dr. Aisha Mahmoud</h4>
@@ -382,7 +386,10 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <button className="grant-btn">+ Grant New Access</button>
+          <button className="grant-btn" onClick={() => setShareModalOpen(true)}>
+            + Grant New Access
+          </button>
+
         </section>
         <section className="recent-activity">
           <div className="recent-heading">
@@ -440,6 +447,11 @@ const Dashboard = () => {
             isOpen={isModalOpen}
             onClose={() => setModalOpen(false)}
           />
+          <GrantAccess
+            isOpen={isShareModalOpen}
+            onClose={() => setShareModalOpen(false)}
+          />
+
       </div>
     </div>
     </div>
