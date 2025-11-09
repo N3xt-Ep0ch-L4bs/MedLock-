@@ -1,7 +1,7 @@
 
 .dashboard {
   display: flex;
-  min-height: 100vh;
+  min-height: 80vh;
   background: #f9fafb;
   font-family: "Inter", sans-serif;
 }
@@ -797,7 +797,6 @@ ul li {
 .action-container {
   padding: 24px;
   background-color: #f3f4f6;
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: start;
@@ -865,4 +864,107 @@ ul li {
 .nested-card h3 {
   font-size: 0.7rem;
   margin-bottom: 8px;
+}
+
+.prescriptions-container {
+  padding: 24px;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.prescriptions-container h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.prescriptions-container p {
+  color: #6b7280;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+}
+
+/* Summary Cards */
+.prescriptions-summary {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 150px;
+  flex-direction: column;
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #FFFFFF;
+}
+
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filters input {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+}
+
+/* Table */
+.prescriptions-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.prescriptions-table th,
+.prescriptions-table td {
+  padding: 12px 20px;
+  font-size: 14px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.prescriptions-table th {
+  background-color: #f3f4f6;
+}
+
+.prescriptions-table tr:last-child td {
+  border-bottom: none;
+}
+
+.prescriptions-table td .view-btn {
+  padding: 6px 12px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.prescriptions-table td .view-btn:hover {
+  background-color: #2563eb;
+}
+
+/* Status colors */
+.active {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.dispensed {
+  color: #3b82f6;
+  font-weight: 600;
 }
