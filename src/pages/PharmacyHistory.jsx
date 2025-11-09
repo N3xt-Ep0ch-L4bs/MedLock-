@@ -1,4 +1,5 @@
 import React from "react";
+import Logo from "../assets/logo.png"
 import "./pharmacy.css";
 
 const PharmacyHistory = () => {
@@ -11,6 +12,18 @@ const PharmacyHistory = () => {
 
   return (
     <div className="pharmacy-history">
+        <header className="pharmacy-header">
+                <div className="logo-section">
+                  <img src={Logo} alt="MedLock Logo" className="logo" />
+                  <h2>MedLock</h2>
+                  <span className="portal-text">Pharmacy Portal</span>
+                </div>
+                <div className="user-section">
+                  <span className="username">Maria Rodriguez</span>
+                  <span className="roles">PharmD</span>
+                  <div className="profile-circle">MR</div>
+                </div>
+              </header>
       <header className="ph-header">
         <h2>Dispensation History & Audit Log</h2>
         <p className="sub">Pharmacy Dashboard / Dispensation Log</p>

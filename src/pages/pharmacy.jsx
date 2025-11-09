@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./pharmacy.css";
 import Logo from "../assets/logo.png";
 import {
@@ -114,7 +115,9 @@ const PharmacyDashboard = () => {
               <QrCode size={18} />
               Scan Prescription QR Code
             </button>
-            <button className="history-btn">History</button>
+             <Link to="/pharmacyHistory">
+              <button className="history-btn">History</button>
+            </Link>
           </div>
 
           <div className="tabs">

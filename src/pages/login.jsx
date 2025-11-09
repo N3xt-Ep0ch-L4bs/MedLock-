@@ -9,21 +9,27 @@ import "./pages.css";
 
 const Login = () => {
   const [role, setRole] = useState("");
-  const [step, setStep] = useState(1); // 1 = choose role, 2 = identity verification
+  const [step, setStep] = useState(1); 
   const navigate = useNavigate();
 
   const goToIdentityStep = () => {
-    if (!role) return; // safety
+    if (!role) return; 
     setStep(2);
   };
 
-  const handleGoogleContinue = () => {
-    // Replace with actual auth flow if you wire one later.
-    // For now we continue to the login route used before.
-    if (role) {
-      navigate(`/login/${role.toLowerCase()}`);
-    }
-  };
+ const handleGoogleContinue = () => {
+  if (!role) return;
+
+  // Simulate Google auth success and redirect based on user role
+  if (role === "Patient") {
+    navigate("/dashboard");
+  } else if (role === "Doctor") {
+    navigate("/doctor");
+  } else if (role === "Pharmacy") {
+    navigate("/pharmacy");
+  }
+};
+
 
   return (
     <div className="login-container">
