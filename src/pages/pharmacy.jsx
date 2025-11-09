@@ -100,10 +100,8 @@ const PharmacyDashboard = () => {
         </div>
       </header>
 
-      {/* MAIN VIEWS */}
       {!selectedPrescription ? (
         <>
-          {/* Dashboard */}
           <div className="search">
             <div className="search-input">
               <Search size={18} />
@@ -261,8 +259,6 @@ const PharmacyDashboard = () => {
                 </p>
               </div>
             </div>
-
-            {/* POPUP ON TOP */}
             {showPopup && (
               <div className="popup-overlay">
                 <div className="popup-panel">
@@ -275,7 +271,6 @@ const PharmacyDashboard = () => {
                       ✕
                     </button>
                   </div>
-                  {/* Patient & Doctor Info Card */}
                     <div className="popup-section info-card">
                       <div className="info-card-row">
                         <div className="info-box patient-box">

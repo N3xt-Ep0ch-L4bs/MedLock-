@@ -48,7 +48,6 @@
   justify-content: center;
 }
 
-/* SEARCH BAR */
 .search {
   margin-top: 20px;
   display: flex;
@@ -104,7 +103,6 @@
   font-weight: 700;
 }
 
-/* FILTER TABS */
 .tabs {
   display: flex;
   gap: 10px;
@@ -125,14 +123,12 @@
   color: #fff;
 }
 
-/* MAIN CONTENT */
 .dashboard-content {
   display: grid;
   grid-template-columns: 3fr 1fr;
   gap: 20px;
 }
 
-/* TABLE */
 .prescription-section {
   background: #fff;
   border-radius: 10px;
@@ -210,7 +206,6 @@
   color: #0284c7;
 }
 
-/* BUTTONS */
 .verify-btn {
   color: #0072ff;
   border: none;
@@ -228,7 +223,6 @@
   cursor: pointer;
 }
 
-/* RECENT ACTIVITY */
 .activity-section {
   background: #fff;
   border-radius: 10px;
@@ -266,7 +260,8 @@
   padding: 1.5rem 2rem;
   background-color: #f9fafb;
   border-radius: 12px;
-}/* ======= POPUP STYLES ======= */
+}
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -337,7 +332,6 @@
   background: #dc2626;
 }
 
-/* POPUP SECTIONS */
 .popup-section {
   margin-bottom: 1.5rem;
 }
@@ -367,7 +361,6 @@
   font-size: 0.85rem;
 }
 
-/* DOSAGE LIST */
 .dosage-list {
   padding-left: 1.2rem;
   color: #374151;
@@ -379,7 +372,6 @@
   margin-bottom: 0.4rem;
 }
 
-/* VERIFICATION BOX */
 .verification-box {
   background: #f1f7ff;
   border: 1px solid #d0e2ff;
@@ -416,7 +408,6 @@
   cursor: pointer;
 }
 
-/* SAFE TO DISPENSE */
 .safe-box {
   display: flex;
   align-items: center;
@@ -431,7 +422,6 @@
   color: #6b7280;
 }
 
-/* NOTES */
 .notes-box {
   width: 100%;
   min-height: 80px;
@@ -448,7 +438,6 @@
   margin-top: 0.3rem;
 }
 
-/* DISPENSE BUTTON & LINKS */
 .dispense-btn {
   width: 100%;
   background: #22c55e;
@@ -592,7 +581,6 @@
   background-color: #e5e7eb;
 }
 
-/* Popup Patient & Doctor Info Card */
 .info-card {
   background: #f5f7fa;
   border-radius: 10px;
@@ -631,7 +619,6 @@
   color: #111827;
 }
 
-/* === Confirm Dispensation Popup === */
 .confirm-popup {
   background: #ffffff;
   width: 460px;
@@ -860,7 +847,6 @@
   border-color: #22c55e;
 }
 
-/* === Table === */
 .ph-table {
   background: #fff;
   border-radius: 12px;
@@ -943,7 +929,6 @@
   background: #16a34a;
 }
 
-/* === Pagination === */
 .pagination {
   display: flex;
   justify-content: center;
@@ -971,7 +956,6 @@
   border: none;
 }
 
-/* === Verification Summary === */
 .verification-summary {
   background: #fff;
   border-radius: 12px;
