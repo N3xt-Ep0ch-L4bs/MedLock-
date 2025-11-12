@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./pharmacy.css";
+import SuccessIcon from "../assets/success.png"
+import DollarLogo from "../assets/dollar.png"
+import CounterLogo from "../assets/counter.png"
 import Logo from "../assets/logo.png";
 import {
   CheckCircle,
@@ -12,8 +15,21 @@ import {
 
 const PharmacyDashboard = () => {
   const [activeTab, setActiveTab] = useState("Active Prescriptions");
-  const [selectedPrescription, setSelectedPrescription] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
+const [selectedPrescription, setSelectedPrescription] = useState(null);
+const [showPopup, setShowPopup] = useState(false);
+const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+
+useEffect(() => {
+  if (showPaymentPopup) {
+    const timer = setTimeout(() => {
+      setShowPaymentPopup(false);
+      setShowPaymentSuccess(true);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }
+}, [showPaymentPopup]);
 
   const prescriptions = [
     {
@@ -76,7 +92,6 @@ const PharmacyDashboard = () => {
     }
   };
 
-  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
   const handleOpenPrescription = (p) => {
     setSelectedPrescription(p);
@@ -374,9 +389,7 @@ const PharmacyDashboard = () => {
                           <div className="checklist">
                             <label><input type="checkbox" /> Verified patient identity</label>
                             <label><input type="checkbox" /> Counseled patient on medication usage</label>
-                            <label className="checked">
-                              <input type="checkbox" checked readOnly /> Checked for drug interactions
-                            </label>
+                            <label >                                                                <input type="checkbox" /> Checked for drug interactions </label>
                             <label><input type="checkbox" /> Patient signature obtained</label>
                           </div>
 
@@ -390,10 +403,15 @@ const PharmacyDashboard = () => {
                           </div>
 
                           <div className="confirm-actions">
-                            <button className="cancel-btn" onClick={() => setShowConfirmPopup(false)}>
-                              ✕ Cancel
-                            </button>
-                            <button className="confirm-btn"> Confirm Dispensation</button>
+                            <button
+                                className="confirm-btn"
+                                onClick={() => {
+                                  setShowConfirmPopup(false);
+                                  setShowPaymentPopup(true);
+                                }}
+                              >
+                                Confirm Dispensation
+                              </button>
                           </div>
                         </div>
                       </div>
@@ -401,9 +419,114 @@ const PharmacyDashboard = () => {
                 </div>
               </div>
             )}
+            {/* Awaiting Patient Payment Popup */}
+            {showPaymentPopup && (
+              <div className="popup-overlay fade-in">
+                <div className="payment-popup slide-up">
+                  <h3>Awaiting Patient Payment</h3>
+                  <div className="animated-line">
+                    <div className="icon-box"><img src={DollarLogo} /></div>
+                    <div className="progress-line"></div>
+                    <div className="icon-box"><img src={CounterLogo} /></div>
+                  </div>
+
+                  <p className="payment-text">
+                    Payment request sent to <strong>Ezekiel Okon</strong>.
+                  </p>
+                  <p className="subtext">
+                    Please ask Ezekiel to confirm the payment on their device.
+                  </p>
+
+                  <div className="payment-summary">
+                    <h4>Payment Details Summary</h4>
+                    <p><strong>From:</strong> CVS Pharmacy - Downtown (0xabc1...def2)</p>
+                    <p><strong>To:</strong> Ezekiel Okon (0x1234...5678)</p>
+                    <p><strong>Amount:</strong> 24.50 SUI</p>
+                    <p><strong>Memo:</strong> Prescription RX-8847-2024 for Lisinopril 10mg</p>
+                  </div>
+
+                  <div className="payment-id-box">
+                    <label>Payment Request ID</label>
+                    <div className="id-row">
+                      <input type="text" readOnly value="PR-20241101-00123" />
+                      <button className="copy-btn">Copy</button>
+                    </div>
+                  </div>
+
+                  <button
+                    className="cancel-payment-btn"
+                    onClick={() => setShowPaymentPopup(false)}>
+                    Cancel Request
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}
+      {showPaymentSuccess && (
+  <div className="popup-overlay">
+    <div className="success-popup">
+      <div className="success-img"><img src={SuccessIcon} /></div>
+      <h2>Payment Successful!</h2>
+      <p className="success-subtext">
+        Transaction confirmed on Sui blockchain.
+      </p>
+
+      <div className="success-summary">
+        <h4>Payment Summary</h4>
+        <div className="summary-row">
+          <span>Patient Name:</span>
+          <p>Ezekiel Okon (HLK-2847)</p>
+        </div>
+        <div className="summary-row">
+          <span>Medication:</span>
+          <p>Lisinopril 10mg, 30 tablets</p>
+        </div>
+        <div className="summary-row">
+          <span>Prescription ID:</span>
+          <p>RX-8847-2024</p>
+        </div>
+        <div className="summary-row">
+          <span>Requested By:</span>
+          <p>You (Maria Rodriguez, PharmD)</p>
+        </div>
+        <div className="amount-box">
+          <p>Total Amount Paid</p>
+          <h3>24.50 SUI</h3>
+        </div>
+
+        <div className="hash-box">
+          <label>Transaction Hash</label>
+          <div className="hash-row">
+            <input
+              type="text"
+              readOnly
+              value="0xde83ac0f19e243b9da5c6d7e8f09123456789abcde0f123456789debc7"
+            />
+            <button className="copy-btn">Copy</button>
+          </div>
+          <p className="verified-text">
+            Payment verified on Sui blockchain.{" "}
+            <a href="#" className="explorer-link">
+              View on Explorer
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <div className="success-buttons">
+        <button className="receipt-btn">🧾 Print Patient Receipt</button>
+        <button
+          className="close-btn"
+          onClick={() => setShowPaymentSuccess(false)}>
+          Close & Dispense Next →
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
