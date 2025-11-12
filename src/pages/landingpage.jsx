@@ -16,8 +16,28 @@ import SuiLogo from "../assets/sui.png";
 import SealLogo from "../assets/seal.png";
 import WalrusLogo from "../assets/walrus.png";
 import "./pages.css";
+import { useEffect } from "react";
 
-function LandingPage() {
+
+
+function LandingPage() {useEffect(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
+
+  document.querySelectorAll(".role-card, .how-card, .review-card, .transform-card, .powered-card, section").forEach((el) => {
+    observer.observe(el);
+  });
+
+  return () => observer.disconnect();
+}, []);
   const navigate = useNavigate();
   return (
     <>

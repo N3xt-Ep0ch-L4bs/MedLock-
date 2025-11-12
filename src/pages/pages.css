@@ -7,6 +7,37 @@
   justify-content: space-between;
 }
 
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  color: #0a2540;
+  background: radial-gradient(at 40% 20%, #a7ffeb 0px, transparent 50%),
+              radial-gradient(at 80% 0%, #81d4fa 0px, transparent 50%),
+              radial-gradient(at 0% 50%, #e1bee7 0px, transparent 50%),
+              radial-gradient(at 80% 50%, #b3e5fc 0px, transparent 50%),
+              radial-gradient(at 0% 100%, #bbdefb 0px, transparent 50%);
+  background-size: 200% 200%;
+  animation: meshGradient 12s ease-in-out infinite;
+}
+
+@keyframes meshGradient {
+  0% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: hue-rotate(20deg);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+}
+
+
 .hero h1 {
   font-size: 45px;
   font-weight: bold;
@@ -497,13 +528,133 @@
   color: #607d8b;
 }
 
+/* ===== Global Fade-In Animations ===== */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ===== Hero Animations ===== */
+.hero h1 {
+  animation: fadeLeft 1s ease-out;
+}
+
+.hero p {
+  animation: fadeUp 1.2s ease-out;
+}
+
+.start-btn,
+.learn-btn {
+  opacity: 0;
+  animation: fadeUp 1s ease-out 0.5s forwards;
+}
+
+/* ===== Floating Hero Image ===== */
+.hero-img img {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ===== Interactive Cards ===== */
+.role-card, .how-card, .review-card, .transform-card, .powered-card {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: transform 0.9s ease, box-shadow 0.4s ease, opacity 0.5s ease;
+}
+
+.role-card.visible,
+.how-card.visible,
+.review-card.visible,
+.transform-card.visible,
+.powered-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.role-card:hover, .how-card:hover, .review-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.actives h2 {
+  animation: fadeUp 1.5s ease-out;
+}
+
+.start-btn:hover, .learn-btn:hover, .control-button:hover {
+  transform: scale(1.05);
+  transition: transform 0.5s ease;
+}
+
+.role-card button:hover,
+.how-card:hover img,
+.review-card:hover img {
+  filter: brightness(1.15);
+  transition: filter 0.7s ease;
+}
+
+section h2 {
+  opacity: 0;
+  animation: fadeUp 1.3s ease forwards;
+}
+
+section.visible h2,
+section.visible p {
+  opacity: 1;
+}
+
+.fade-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1.3s ease, transform 0.8s ease;
+}
+
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .login-container {
   display: flex;
   height: 100vh;
   overflow: hidden;
 }
 
-/* ===== Left Illustration (Always Visible) ===== */
 .login-img {
   width: 50%;
   height: 100%;
@@ -511,7 +662,6 @@
   background-color: #eef3ff;
 }
 
-/* ===== Right Box (Steps Area) ===== */
 .login-box, .identity-right {
   width: 50%;
   padding: 3rem;
@@ -523,7 +673,6 @@
   transition: all 0.4s ease;
 }
 
-/* Header Section */
 .login-header {
   text-align: center;
 }
@@ -543,7 +692,6 @@
   margin-top: 0.3rem;
 }
 
-/* ===== Role Section ===== */
 .role-section {
   margin-top: 2rem;
 }
