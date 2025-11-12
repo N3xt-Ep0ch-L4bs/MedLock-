@@ -156,7 +156,7 @@ function LandingPage() {
         </div>
     </div>
     </section>
-    <section className="active">
+    <section className="actives">
         <div className="patients">
             <h2>50K+</h2>
             <p>Active Patients</p>

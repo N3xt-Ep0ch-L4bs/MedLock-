@@ -142,7 +142,6 @@ const DoctorDashboard = () => {
               )) : <p className="small-muted">No documents yet.</p>}
             </div>
 
-            {/* Notes */}
             <div className="notes-card card">
               <h3>My Notes for This Patient</h3>
               <div className="add-note">
@@ -165,9 +164,7 @@ const DoctorDashboard = () => {
             </div>
           </div>
 
-          {/* Right Sidebar */}
           <aside className="patient-right">
-            {/* Prescriptions */}
             <div className="card">
               <h3>Active Prescriptions</h3>
               {selectedPatient.prescriptions.length ? selectedPatient.prescriptions.map(rx => (
@@ -184,7 +181,6 @@ const DoctorDashboard = () => {
               )) : <p className="small-muted">No active prescriptions.</p>}
             </div>
 
-            {/* Vitals */}
             <div className="card">
               <h3>Latest Vitals</h3>
               <div className="vitals-grid">
@@ -196,7 +192,6 @@ const DoctorDashboard = () => {
               </div>
             </div>
 
-            {/* Medical History */}
             <div className="history-card card">
               <div className="history-header">
                 <h3>Medical History</h3>
@@ -211,7 +206,6 @@ const DoctorDashboard = () => {
               ) : <p className="small-muted">No medical history recorded.</p>}
             </div>
 
-            {/* Patient Actions */}
             <div className="action-container">
               <div className="main-card">
                 <h2 className="main-card-title">Patient Actions</h2>
@@ -225,31 +219,6 @@ const DoctorDashboard = () => {
           </aside>
         </div>
 
-        {/* Activity & Notifications */}
-        <section className="activity-notifications">
-          <div className="activity" style={{ flex: 2 }}>
-            <h3>Recent Activity</h3>
-            {activities.map((a,i) => (
-              <div className="activity-content" key={i}>
-                <img src={a.img} alt="activity" className="activity-img" />
-                <div className="activity-details">
-                  <p>{a.text}</p>
-                  <span className="small-muted">{a.time}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="notifications">
-            <h3>Notifications</h3>
-            {notifications.map((n,i) => (
-              <div className="notification-item" key={i}>
-                <p>{n.icon} {n.text}</p>
-                <span className="notification-time small-muted">{n.time}</span>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
     );
   } else if (activePage === "prescriptions") {

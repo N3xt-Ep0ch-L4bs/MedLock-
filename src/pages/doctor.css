@@ -240,7 +240,6 @@
   padding: 4px;
 }
 
-/* ====== Activity & Notifications ====== */
 .activity-notifications {
   display: flex;
   gap: 20px;
@@ -344,7 +343,6 @@
   color: #6b7280;
 }
 
-/* ====== Responsive ====== */
 @media (max-width: 1024px) {
   .dashboard {
     flex-direction: column;
@@ -409,7 +407,6 @@
   gap: 1.5rem;
 }
 
-/* ---- Card ---- */
 .card {
   background: #ffffff;
   border-radius: 16px;
@@ -429,7 +426,6 @@
   color: #0f172a;
 }
 
-/* ---- Patient Header ---- */
 .patient-top {
   display: flex;
   align-items: center;
@@ -480,7 +476,6 @@
   font-weight: 500;
 }
 
-/* ---- Documents ---- */
 .doc-item {
   display: flex;
   align-items: center;
@@ -523,7 +518,6 @@
   color: #64748b;
 }
 
-/* ---- Buttons ---- */
 .btn-row {
   display: flex;
   gap: 0.6rem;
@@ -546,7 +540,6 @@
   transform: translateY(-1px);
 }
 
-/* ---- Prescriptions ---- */
 .prescription-item {
   display: flex;
   justify-content: space-between;
@@ -574,7 +567,6 @@
   font-weight: 600;
 }
 
-/* ---- Vitals ---- */
 .vitals-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -678,7 +670,6 @@ ul li {
   padding: 0.45rem 1rem;
 }
 
-/* --- Notes List --- */
 .notes-list {
   display: flex;
   flex-direction: column;
@@ -735,7 +726,6 @@ ul li {
   padding: 0.5rem 0;
 }
 
-/* Medical History Card */
 .history-card {
   background: white;
   border-radius: 12px;
@@ -792,7 +782,6 @@ ul li {
   line-height: 1.4;
 }
 
-/* Container */
 .action-container {
   padding: 24px;
   background-color: #f3f4f6;
@@ -801,7 +790,6 @@ ul li {
   align-items: start;
 }
 
-/* Main Card */
 .main-card {
   background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -817,7 +805,6 @@ ul li {
   margin-bottom: 16px;
 }
 
-/* Nested Cards Container */
 .nested-cards {
   display: grid;
   grid-template-columns: 1fr;
@@ -830,7 +817,6 @@ ul li {
   }
 }
 
-/* Nested Cards */
 .nested-card {
   padding: 16px;
   border-radius: 1rem;
@@ -843,7 +829,6 @@ ul li {
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-/* Card Colors */
 .request-records {
   background-color: #dbeafe;
 }
@@ -882,7 +867,6 @@ ul li {
   margin-bottom: 16px;
 }
 
-/* Summary Cards */
 .prescriptions-summary {
   display: flex;
   gap: 16px;
@@ -901,8 +885,6 @@ ul li {
   background: #FFFFFF;
 }
 
-
-/* Filters */
 .filters {
   display: flex;
   gap: 16px;
@@ -918,7 +900,6 @@ ul li {
   border: 1px solid #d1d5db;
 }
 
-/* Table */
 .prescriptions-table {
   width: 100%;
   border-collapse: collapse;
@@ -957,7 +938,6 @@ ul li {
   background-color: #2563eb;
 }
 
-/* Status colors */
 .active {
   color: #10b981;
   font-weight: 600;

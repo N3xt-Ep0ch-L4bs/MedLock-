@@ -20,7 +20,6 @@ const Login = () => {
  const handleGoogleContinue = () => {
   if (!role) return;
 
-  // Simulate Google auth success and redirect based on user role
   if (role === "Patient") {
     navigate("/dashboard");
   } else if (role === "Doctor") {
