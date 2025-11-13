@@ -53,7 +53,7 @@ function LandingPage() {useEffect(() => {
           <button onClick={() => navigate("/login")} className="start-btn">
             Get Started
           </button>
-          <button className="learn-btn">Learn More</button>
+          <button onClick={() => navigate("/learnmore")} className="learn-btn">Learn More</button>
         </div>
         <div className="hero-img">
           <img src={HeroImage} alt="animation" />
@@ -67,7 +67,7 @@ function LandingPage() {useEffect(() => {
           ecosystem
         </p>
 
-        <div className="role-cards">
+        <div onClick={() => navigate("/login")} className="role-cards">
           <div className="role-card patient">
             <img src={PatientLogo} alt="Patient" />
             <h4>Patient</h4>

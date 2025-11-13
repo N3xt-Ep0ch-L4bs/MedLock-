@@ -3,7 +3,7 @@ import Logo from "../assets/logo.png";
 import BookIcon from "../assets/book.png";
 import CommunityIcon from "../assets/community.png";
 import HelpIcon from "../assets/help.png";
-import { Settings, Bell, ChevronDown } from "lucide-react";
+import { Settings, Bell, ChevronDown, Verified } from "lucide-react";
 import "./support.css";
 
 const featuredArticles = [
@@ -106,7 +106,7 @@ const Support = () => {
 
         {/* Footer */}
         <footer className="status-footer">
-          <span>✅ All Systems Operational</span>
+          <span><Verified /> All Systems Operational</span>
           <a href="#">View detailed status page</a>
         </footer>
       </div>

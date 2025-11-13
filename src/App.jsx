@@ -4,10 +4,13 @@ import Doctor from "./pages/doctor";
 import Login from "./pages/login";
 import PharmacyHistory from "./pages/PharmacyHistory";
 import About from "./pages/about";
+import How from "./pages/how";
 import PharmacyDashboard from "./pages/pharmacy";
 import Dashboard from "./pages/dashboard";
 import Support from "./pages/support";
 import "./App.css";
+import { Import } from "lucide-react";
+import LearnMore from "./pages/learnmore";
 
 function App() {
   return (
@@ -15,6 +18,8 @@ function App() {
       <Routes>
         
         <Route path="/" element={<LandingPage />} />
+        <Route path="/howitworks" element={<How />} />
+        <Route path="/learnmore" element={<LearnMore />} />
         <Route path="/about" element={<About />} />
         <Route path="/support" element={<Support />} />
         <Route path="/login" element={<Login />} />
