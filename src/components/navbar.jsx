@@ -16,7 +16,7 @@ function Navbar() {
         <a href="#features">Features</a>
         <a href="#how-it-works">How it works</a>
         <a href="#about">About</a>
-        <a href="#support">Support</a>
+        <a href="/support">Support</a>
         <button onClick={() => navigate("/login")} className="started-btn">
           Get started
         </button>

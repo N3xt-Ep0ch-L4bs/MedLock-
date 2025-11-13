@@ -518,7 +518,7 @@ useEffect(() => {
       <div className="success-buttons">
         <button className="receipt-btn">🧾 Print Patient Receipt</button>
         <button
-          className="close-btn"
+          className="close-button"
           onClick={() => setShowPaymentSuccess(false)}>
           Close & Dispense Next →
         </button>
