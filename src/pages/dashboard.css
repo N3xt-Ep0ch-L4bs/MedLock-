@@ -789,3 +789,131 @@
     transform: scale(1);
   }
 }
+
+.settings-page {
+  padding: 2rem;
+  max-width: 850px;
+  margin: auto;
+}
+
+.settings-title {
+  font-size: 1.7rem;
+  margin-bottom: 1.5rem;
+}
+
+.settings-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  background: #f5f5f7;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #2563eb;
+  color: white;
+}
+
+.settings-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.profile-initials {
+  width: 65px;
+  height: 65px;
+  background: #e5e7eb;
+  border-radius: 50%;
+  font-size: 1.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.change-photo-btn,
+.change-btn {
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+label {
+  font-weight: 600;
+  margin-top: 1rem;
+  display: block;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+}
+
+textarea {
+  height: 90px;
+  resize: none;
+}
+
+.input-inline {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.view-medical-btn {
+  background: #2563eb;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  border: none;
+  margin-top: 1rem;
+  display: flex;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  gap: 1rem;
+}
+
+.settings-actions button {
+  padding: 0.8rem 1.3rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.download-btn {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.print-btn {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+}

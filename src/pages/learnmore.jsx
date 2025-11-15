@@ -82,7 +82,6 @@ const LearnMore = () => {
     <>
       <NavBar />
       <div className="learnmore-page">
-        {/* Header Section */}
         <section className="learn-header">
           <h2>
             Dive Deeper into <span>HealthLock</span>
@@ -94,7 +93,6 @@ const LearnMore = () => {
           </p>
         </section>
 
-        {/* Learn Cards */}
         <section className="learn-grid">
           {learnCards.map((card, index) => (
             <div key={index} className="learn-card">
@@ -112,7 +110,6 @@ const LearnMore = () => {
           ))}
         </section>
 
-        {/* Resources Section */}
         <section className="resources-section">
           <h3>Featured Resources</h3>
           <div className="resources-grid">

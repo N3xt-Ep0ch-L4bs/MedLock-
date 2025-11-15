@@ -42,6 +42,7 @@ import "./dashboard.css";
 function UploadRecordModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
@@ -68,38 +69,115 @@ function UploadRecordModal({ isOpen, onClose }) {
   );
 }
 
+const SettingsPage = () => {
+  return (
+    <div className="settings-page">
+      <h2 className="settings-title">Settings</h2>
+
+      <div className="settings-card">
+        <h3>Account Information</h3>
+        <div className="setting-row">
+          <strong>Full Name:</strong>
+          <span>Ezekiel Okon</span>
+        </div>
+        <div className="setting-row">
+          <strong>Email:</strong>
+          <span>ezekiel.oko@example.com</span>
+        </div>
+        <div className="setting-row">
+          <strong>Phone:</strong>
+          <span>+234 810 000 1234</span>
+        </div>
+        <button className="setting-btn">Edit Account</button>
+      </div>
+
+      <div className="settings-card">
+        <h3>Privacy & Security</h3>
+        <div className="setting-row">
+          <strong>Account Encryption:</strong>
+          <span>Enabled</span>
+        </div>
+        <div className="setting-row">
+          <strong>Two-factor Authentication:</strong>
+          <span>Active</span>
+        </div>
+        <button className="setting-btn">Manage Security</button>
+      </div>
+
+      <div className="settings-card">
+        <h3>Data Controls</h3>
+        <div className="setting-row">
+          <strong>Download Your Data:</strong>
+          <button className="setting-btn">Export Data</button>
+        </div>
+        <div className="setting-row">
+          <strong>Clear Activity Log:</strong>
+          <button className="setting-btn danger">Clear Log</button>
+        </div>
+      </div>
+
+      <div className="settings-card">
+        <h3>Support</h3>
+        <button className="setting-btn">Contact Support</button>
+        <button className="setting-btn">Help Center</button>
+      </div>
+    </div>
+  );
+};
+
+
 const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const [isShareModalOpen, setShareModalOpen] = useState(false);
 
-
+  const [currentPage, setCurrentPage] = useState("dashboard");
   return (
     <div className="dashboard">
       <aside className="sidebar">
         <nav className="sidebar-nav">
-          <a className="sidebar-link active">
-            <ShieldCheck size={18} /> Dashboard
-          </a>
-          <a className="sidebar-link">
-            <FileText size={18} /> My Records
-          </a>
-          <a className="sidebar-link">
-            <ClipboardCheck size={18} /> Prescriptions
-          </a>
-          <a className="sidebar-link">
-            <User size={18} /> Shared Access
-          </a>
-          <a className="sidebar-link">
-            <Activity size={18} /> Activity Log
-          </a>
-          <a className="sidebar-link">
-            <Settings size={18} /> Settings
-          </a>
-          <a className="sidebar-link">
-            <BadgeQuestionMark size={18} /> Help
-          </a>
-        </nav>
+        <a
+          className={`sidebar-link ${currentPage === "dashboard" ? "active" : ""}`}
+          onClick={() => setCurrentPage("dashboard")}
+        >
+          <ShieldCheck size={18} /> Dashboard
+        </a>
+
+        <a
+          className={`sidebar-link ${currentPage === "records" ? "active" : ""}`}
+          onClick={() => setCurrentPage("records")}
+        >
+          <FileText size={18} /> My Records
+        </a>
+
+        <a
+          className={`sidebar-link ${currentPage === "prescriptions" ? "active" : ""}`}
+          onClick={() => setCurrentPage("prescriptions")}
+        >
+          <ClipboardCheck size={18} /> Prescriptions
+        </a>
+
+        <a
+          className={`sidebar-link ${currentPage === "shared" ? "active" : ""}`}
+          onClick={() => setCurrentPage("shared")}
+        >
+          <User size={18} /> Shared Access
+        </a>
+
+        <a
+          className={`sidebar-link ${currentPage === "activity" ? "active" : ""}`}
+          onClick={() => setCurrentPage("activity")}
+        >
+          <Activity size={18} /> Activity Log
+        </a>
+
+        <a
+          className={`sidebar-link ${currentPage === "settings" ? "active" : ""}`}
+          onClick={() => setCurrentPage("settings")}
+        >
+          <Settings size={18} /> Settings
+        </a>
+      </nav>
         <a className="logout-link">
           <LogOut size={18} /> Sign Out
         </a>
@@ -126,135 +204,146 @@ const Dashboard = () => {
 
         <div className="main-area">
           <main className="main-content">
-            <div className="welcome-card">
-              <div className="welcome-text">
-                <h2>Good afternoon, Ezekiel 👋</h2>
-                <p>Your health data is secure and encrypted</p>
-              </div>
-              <button
-                className="upload-btn"
-                onClick={() => setModalOpen(true)}
-              >
-                <Plus size={16} /> Upload New Record
-              </button>
-            </div>
+
+    {/* ============================
+          DASHBOARD PAGE
+    ============================= */}
+    {currentPage === "dashboard" && (
+      <>
+        <div className="welcome-card">
+          <div className="welcome-text">
+            <h2>Good afternoon, Ezekiel 👋</h2>
+            <p>Your health data is secure and encrypted</p>
+          </div>
+          <button className="upload-btn" onClick={() => setModalOpen(true)}>
+            <Plus size={16} /> Upload New Record
+          </button>
+        </div>
+
         <div className="caads">
           <div className="stats-container">
             <div className="stat-card">
               <img src={RecordIcon} />
-                <h4 className="stat-title">Records</h4>
-                <p className="stat-value">12</p>
-                <p className="stat-note">↑ 2 this month</p>
+              <h4 className="stat-title">Records</h4>
+              <p className="stat-value">12</p>
+              <p className="stat-note">↑ 2 this month</p>
             </div>
 
             <div className="stat-card">
               <img src={PrecriptionIcon} />
-                <h4 className="stat-title">Active Prescriptions</h4>
-                <p className="stat-value">3</p>
-                <p className="stat-note">No change</p>
+              <h4 className="stat-title">Active Prescriptions</h4>
+              <p className="stat-value">3</p>
+              <p className="stat-note">No change</p>
             </div>
 
             <div className="stat-card">
               <img src={DoctorIcon} />
-                <h4 className="stat-title">Doctors</h4>
-                <p className="stat-value">2</p>
-                <p className="stat-note">Current access</p>
+              <h4 className="stat-title">Doctors</h4>
+              <p className="stat-value">2</p>
+              <p className="stat-note">Current access</p>
             </div>
 
             <div className="stat-card">
               <img src={ActivityIcon} />
-                <h4 className="stat-title">Activity Events</h4>
-                <p className="stat-value">24</p>
-                <p className="stat-note">Last 7 days</p>
+              <h4 className="stat-title">Activity Events</h4>
+              <p className="stat-value">24</p>
+              <p className="stat-note">Last 7 days</p>
             </div>
-         </div>
+          </div>
 
-            <div className="records-header">
-                <h3>My Health Records</h3>
-                <a href="#" className="view-all">View All 12 Records →</a>
-            </div>
+          <div className="records-header">
+            <h3>My Health Records</h3>
+            <a href="#" className="view-all">View All 12 Records →</a>
+          </div>
+
           <div className="records-section">
             <div className="records-grid">
-                <div className="record-card">
-                  <img src={ResultIcon} />
+
+              {/* All 6 record cards unchanged */}
+              <div className="record-card">
+                <img src={ResultIcon} />
                 <h4 className="record-title">Blood Test Results</h4>
                 <p className="record-meta"><Calendar size={14} /> Oct 23, 2024 • <File size={13} /> 4 MB</p>
                 <div className="record-tags">
-                    <span className="record-tag">Shared with 2 doctors</span>
-                    <span className="record-tag">Encrypted</span>
+                  <span className="record-tag">Shared with 2 doctors</span>
+                  <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span><Lock size={13} /> Private</span>
-                    <span>⋯</span>
+                  <span><Lock size={13} /> Private</span>
+                  <span>⋯</span>
                 </div>
-                </div>
+              </div>
 
-                <div className="record-card">
-                  <img src={XrayIcon} />
+              <div className="record-card">
+                <img src={XrayIcon} />
                 <h4 className="record-title">Chest X-Ray</h4>
                 <p className="record-meta"><Calendar size={14} /> Oct 15, 2024 • <File size={13} /> 7 MB</p>
                 <div className="record-tags">
-                    <span className="record-tag">Encrypted</span>
+                  <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span><Lock size={13} /> Private</span>
-                    <span>⋯</span>
+                  <span><Lock size={13} /> Private</span>
+                  <span>⋯</span>
                 </div>
-                </div>
+              </div>
 
-                <div className="record-card">
-                  <img src={LisinoprilIcon} />
+              <div className="record-card">
+                <img src={LisinoprilIcon} />
                 <h4 className="record-title">Prescription - Lisinopril</h4>
                 <p className="record-meta"><Calendar size={14} /> Oct 10, 2024 • <File size={13} /> 3.4 KB</p>
                 <div className="record-tags">
-                    <span className="record-tag">Shared with 1 pharmacy</span>
-                    <span className="record-tag">Encrypted</span>
+                  <span className="record-tag">Shared with 1 pharmacy</span>
+                  <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span><Lock size={13} /> Private</span>
-                    <span>⋯</span>
+                  <span><Lock size={13} /> Private</span>
+                  <span>⋯</span>
                 </div>
-                </div>
-                <div className="record-card">
-                  <img src={LipidIcon} />
+              </div>
+
+              <div className="record-card">
+                <img src={LipidIcon} />
                 <h4 className="record-title">Lipid Panel</h4>
                 <p className="record-meta"><Calendar size={14} /> Sep 22, 2024 •<File size={13} />4 MB</p>
                 <div className="record-tags">
-                    <span className="record-tag">Encrypted</span>
+                  <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span> Shared with 1 Doctor</span>
-                    <span>⋯</span>
+                  <span> Shared with 1 Doctor</span>
+                  <span>⋯</span>
                 </div>
-                </div>
-                <div className="record-card">
-                  <img src={ECGIcon} />
+              </div>
+
+              <div className="record-card">
+                <img src={ECGIcon} />
                 <h4 className="record-title">ECG Report</h4>
                 <p className="record-meta"><Calendar size={14} /> Sep 10, 2024 •<File size={13} /> 2 MB</p>
                 <div className="record-tags">
-                    <span className="record-tag">Encrypted</span>
+                  <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span><Lock size={13} /> Private</span>
-                    <span>⋯</span>
+                  <span><Lock size={13} /> Private</span>
+                  <span>⋯</span>
                 </div>
-                </div>
-                <div className="record-card">
-                  <img src={UrinalysisIcon} />
+              </div>
+
+              <div className="record-card">
+                <img src={UrinalysisIcon} />
                 <h4 className="record-title">Urinalysis</h4>
                 <p className="record-meta"><Calendar size={14} /> Sep 10, 2024 • <File size={13} /> 2 MB</p>
                 <div className="record-tags">
-                    <span className="record-tag">Encrypted</span>
+                  <span className="record-tag">Encrypted</span>
                 </div>
                 <div className="record-footer">
-                    <span><Lock size={13} /> Private</span>
-                    <span>⋯</span>
+                  <span><Lock size={13} /> Private</span>
+                  <span>⋯</span>
                 </div>
-                </div>
-                    </div>
-                    </div>
-                </div>
-                </main> <section className="prescriptions-section">
+              </div>
+
+            </div>
+          </div>
+        </div>
+          <section className="prescriptions-section">
           <div className="section-header">
             <h3>Active Prescriptions</h3>
             <a href="#" className="view-all">View All Prescriptions →</a>
@@ -385,75 +474,75 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-
           <button className="grant-btn" onClick={() => setShareModalOpen(true)}>
             + Grant New Access
           </button>
-
         </section>
+
         <section className="recent-activity">
           <div className="recent-heading">
-          <h3>Recent Activity</h3>
-          <a href="#" className="view-all">View All Activity →</a>
+            <h3>Recent Activity</h3>
+            <a href="#" className="view-all">View All Activity →</a>
           </div>
+
           <div className="activity-timeline">
-        <div className="activity-item">
-          <div className="activity-icon upload"><CloudUpload size={15} /></div>
-          <div className="activity-content">
-            <p>You uploaded <strong>Blood Test Results</strong></p>
-            <span className="activity-time">2 hours ago</span>
-            <div className="activity-hash">0x8f4a...ed2 <Copy size={11} /></div>
-          </div>
-        </div>
+            <div className="activity-item">
+              <div className="activity-icon"><CloudUpload size={15} /></div>
+              <div className="activity-content">
+                <p>Uploaded Blood Test Results</p>
+                <span className="activity-time">2 hours ago</span>
+                <div className="activity-hash">0xA2B3C4... <Copy size={11} /></div>
+              </div>
+            </div>
 
-        <div className="activity-item">
-          <div className="activity-icon share"><UserLock size={15} /></div>
-          <div className="activity-content">
-            <p>You shared <strong>MRI Scan</strong> with <strong>Dr. James Lin</strong></p>
-            <span className="activity-time">Yesterday at 3:45 PM</span>
-            <div className="activity-hash">0x7c2b...fa41 <Copy size={11} /></div>
-          </div>
-        </div>
+            <div className="activity-item">
+              <div className="activity-icon"><UserLock size={15} /></div>
+              <div className="activity-content">
+                <p>Granted Dr. Aisha access to ECG Report</p>
+                <span className="activity-time">1 day ago</span>
+                <div className="activity-hash">0xD4E5F6... <Copy size={11} /></div>
+              </div>
+            </div>
 
-        <div className="activity-item">
-          <div className="activity-icon access"><Eye size={15} /></div>
-          <div className="activity-content">
-            <p><strong>Dr. Aisha Mahmoud</strong> accessed your <strong>Chest X-Ray</strong></p>
-            <span className="activity-time">Yesterday at 10:30 AM</span>
-            <div className="activity-hash">0x9e5c...a7b3 <Copy size={11} /></div>
-          </div>
-        </div>
+            <div className="activity-item">
+              <div className="activity-icon"><Eye size={15} /></div>
+              <div className="activity-content">
+                <p>Dr. James viewed Metformin Prescription</p>
+                <span className="activity-time">2 days ago</span>
+                <div className="activity-hash">0xG7H8I9... <Copy size={11} /></div>
+              </div>
+            </div>
 
-        <div className="activity-item">
-          <div className="activity-icon rx"><Pill size={15} /></div>
-          <div className="activity-content">
-            <p><strong>Dr. Aisha Mahmoud</strong> prescribed <strong>Lisinopril 10mg</strong></p>
-            <span className="activity-time">2 days ago</span>
-            <div className="activity-hash">0x3df1...c8e5 <Copy size={11} /></div>
-          </div>
-        </div>
+            <div className="activity-item">
+              <div className="activity-icon"><Pill size={15} /></div>
+              <div className="activity-content">
+                <p>Dispensed Atorvastatin to Pharmacy</p>
+                <span className="activity-time">3 days ago</span>
+                <div className="activity-hash">0xJ1K2L3... <Copy size={11} /></div>
+              </div>
+            </div>
 
-        <div className="activity-item">
-          <div className="activity-icon revoke"><UserX size={15} /></div>
-          <div className="activity-content">
-            <p>You revoked access for <strong>Dr. Sarah Chen</strong></p>
-            <span className="activity-time">3 days ago</span>
-            <div className="activity-hash">0x6b8d...f2c9 <Copy size={11} /></div>
+            <div className="activity-item">
+              <div className="activity-icon"><UserX size={15} /></div>
+              <div className="activity-content">
+                <p>Revoked Dr. Aisha access to Urinalysis</p>
+                <span className="activity-time">4 days ago</span>
+                <div className="activity-hash">0xM4N5O6... <Copy size={11} /></div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
         </section>
-        <UploadRecordModal
-            isOpen={isModalOpen}
-            onClose={() => setModalOpen(false)}
-          />
-          <GrantAccess
-            isOpen={isShareModalOpen}
-            onClose={() => setShareModalOpen(false)}
-          />
 
+        <UploadRecordModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+        <GrantAccess isOpen={isShareModalOpen} onClose={() => setShareModalOpen(false)} />
+      </>
+    )}
+
+    {currentPage === "settings" && <SettingsPage />}
+
+          </main>
+        </div>
       </div>
-    </div>
     </div>
   );
 };
