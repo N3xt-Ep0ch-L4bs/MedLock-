@@ -15,6 +15,11 @@ import JamesDp from "../assets/lin-dp.png";
 import KileDp from "../assets/aisha-dp.png";
 import GrantAccess from "../components/access"
 import {
+  Camera,
+  Check,
+  Download,
+  Printer,
+  Trash2,
   BadgeQuestionMark,
   Bell,
   Calendar,
@@ -70,56 +75,180 @@ function UploadRecordModal({ isOpen, onClose }) {
 }
 
 const SettingsPage = () => {
+
+  const [activeTab, setActiveTab] = useState("personal");
+
+  const [emailNotif, setEmailNotif] = useState(true);
+  const [smsNotif, setSmsNotif] = useState(false);
+
   return (
-    <div className="settings-page">
-      <h2 className="settings-title">Settings</h2>
+    <div className="settings-container">
+      
+      {/* TITLE */}
+      <h2 className="settings-page-title">Settings</h2>
 
-      <div className="settings-card">
-        <h3>Account Information</h3>
-        <div className="setting-row">
-          <strong>Full Name:</strong>
-          <span>Ezekiel Okon</span>
-        </div>
-        <div className="setting-row">
-          <strong>Email:</strong>
-          <span>ezekiel.oko@example.com</span>
-        </div>
-        <div className="setting-row">
-          <strong>Phone:</strong>
-          <span>+234 810 000 1234</span>
-        </div>
-        <button className="setting-btn">Edit Account</button>
+      {/* TABS */}
+      <div className="settings-tabs">
+        <button
+          className={activeTab === "personal" ? "active" : ""}
+          onClick={() => setActiveTab("personal")}
+        >
+          Personal
+        </button>
+
+        <button
+          className={activeTab === "preferences" ? "active" : ""}
+          onClick={() => setActiveTab("preferences")}
+        >
+          Preferences
+        </button>
       </div>
 
-      <div className="settings-card">
-        <h3>Privacy & Security</h3>
-        <div className="setting-row">
-          <strong>Account Encryption:</strong>
-          <span>Enabled</span>
-        </div>
-        <div className="setting-row">
-          <strong>Two-factor Authentication:</strong>
-          <span>Active</span>
-        </div>
-        <button className="setting-btn">Manage Security</button>
-      </div>
+      {activeTab === "personal" && (
+        <div className="settings-card">
 
-      <div className="settings-card">
-        <h3>Data Controls</h3>
-        <div className="setting-row">
-          <strong>Download Your Data:</strong>
-          <button className="setting-btn">Export Data</button>
-        </div>
-        <div className="setting-row">
-          <strong>Clear Activity Log:</strong>
-          <button className="setting-btn danger">Clear Log</button>
-        </div>
-      </div>
+          <h3 className="section-title">Profile</h3>
 
-      <div className="settings-card">
-        <h3>Support</h3>
-        <button className="setting-btn">Contact Support</button>
-        <button className="setting-btn">Help Center</button>
+          <div className="profile-header">
+            <div className="initial-circle">EO</div>
+            <button className="change-photo-btn">
+              <Camera size={16} /> Change Photo
+            </button>
+          </div>
+
+          <div className="settings-field">
+            <label>Full Name</label>
+            <input type="text" value="Ezekiel Okon" readOnly />
+          </div>
+
+          <div className="settings-field">
+            <label>Email Address</label>
+            <div className="field-row">
+              <input type="text" value="ezekiel.okon@gmail.com" readOnly />
+              <span className="verified">
+                <Check size={14} /> Verified
+              </span>
+              <button className="field-action-btn">Change</button>
+            </div>
+          </div>
+
+          <div className="settings-field">
+            <label>Phone Number</label>
+            <div className="field-row">
+              <input type="text" value="+1 (555) 123-4567" readOnly />
+              <span className="verified">
+                <Check size={14} /> Verified
+              </span>
+              <button className="field-action-btn">Change</button>
+            </div>
+          </div>
+
+          <div className="settings-field">
+            <label>Patient ID</label>
+            <input
+              type="text"
+              className="readonly-input"
+              value="HLX-2847"
+              readOnly
+            />
+          </div>
+
+          <h3 className="section-title" style={{ marginTop: "25px" }}>
+            Health Information
+          </h3>
+
+          <div className="settings-field">
+            <label>Blood Type</label>
+            <input type="text" value="O+" readOnly />
+          </div>
+
+          <div className="settings-field">
+            <label>Known Allergies</label>
+            <textarea value="Penicillin, peanuts" readOnly />
+            <small className="char-limit">160/200 characters</small>
+          </div>
+
+          <button className="view-profile-btn">
+            View Complete Medical Profile
+          </button>
+        </div>
+      )}
+
+            {activeTab === "preferences" && (
+        <div className="preferences-wrapper">
+
+          <div className="pref-card">
+            <h3 className="section-title">Notifications</h3>
+
+            <div className="pref-row">
+              <div>
+                <p className="pref-label">Email Notifications</p>
+                <button className="pref-link">Customize Email</button>
+              </div>
+
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={emailNotif}
+                  onChange={() => setEmailNotif(!emailNotif)}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+
+            <div className="pref-row">
+              <div>
+                <p className="pref-label">SMS Notifications</p>
+                <button className="pref-link">Customize SMS</button>
+              </div>
+
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={smsNotif}
+                  onChange={() => setSmsNotif(!smsNotif)}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          {/* RIGHT CARD — SUPPORT & FEEDBACK */}
+          <div className="pref-card">
+            <h3 className="section-title">Support & Feedback</h3>
+
+            <div className="support-row">
+              <p>Contact Support</p>
+              <button className="support-btn">Contact Support</button>
+            </div>
+
+            <div className="support-row">
+              <p>Provide Feedback</p>
+              <button className="support-btn">Provide Feedback</button>
+            </div>
+
+            <div className="support-row">
+              <p>Help Center Resources</p>
+              <button className="pref-link">Visit Help Center</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {/* FOOTER BUTTONS */}
+      <div className="settings-footer-actions">
+        <button className="download-btn">
+          <Download size={16} /> Download My Data
+        </button>
+
+        <button className="print-btn">
+          <Printer size={16} /> Print Health Summary
+        </button>
+
+        <button className="delete-btn">
+          <Trash2 size={16} /> Delete Account
+        </button>
       </div>
     </div>
   );
