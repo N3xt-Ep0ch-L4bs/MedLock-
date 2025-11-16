@@ -74,6 +74,36 @@ function UploadRecordModal({ isOpen, onClose }) {
   );
 }
 
+const TransactionApprovalModal = ({ isOpen, onClose, transaction }) => {
+  if (!isOpen || !transaction) return null;
+
+  const { recipient, amount, networkFee } = transaction;
+ const total = ((Number(amount) || 0) + (Number(networkFee) || 0)).toFixed(3);
+
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="transaction-modal" onClick={(e) => e.stopPropagation()}>
+        <h2>Please approve the transaction</h2>
+        <div className="transaction-details">
+          <p><strong>Recipient:</strong> {recipient}</p>
+          <p><strong>Amount:</strong> {amount} SUI</p>
+          <p><strong>Estimated Network Fee:</strong> {networkFee} SUI</p>
+          <p><strong>Total to Approve:</strong> {total} SUI</p>
+        </div>
+        <div className="transaction-actions">
+          <button className="confirm-btn" onClick={() => { console.log("Transaction confirmed!"); onClose(); }}>
+            <Check size={16} /> Confirm Transaction
+          </button>
+          <button className="cancel-btn" onClick={onClose}>
+            <XCircle size={16} /> Cancel Transaction
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SettingsPage = () => {
 
   const [activeTab, setActiveTab] = useState("personal");
@@ -261,6 +291,18 @@ const Dashboard = () => {
   const [isShareModalOpen, setShareModalOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState("dashboard");
+  const handlePharmacyRequest = () => {
+  setPendingTransaction({
+    recipient: "CVS Pharmacy - Downtown",
+    amount: 24.50,
+    networkFee: 0.001,
+  });
+  setTransactionModalOpen(true);
+};
+
+const [isTransactionModalOpen, setTransactionModalOpen] = useState(false);
+const [pendingTransaction, setPendingTransaction] = useState(null);
+
   return (
     <div className="dashboard">
       <aside className="sidebar">
@@ -334,9 +376,6 @@ const Dashboard = () => {
         <div className="main-area">
           <main className="main-content">
 
-    {/* ============================
-          DASHBOARD PAGE
-    ============================= */}
     {currentPage === "dashboard" && (
       <>
         <div className="welcome-card">
@@ -388,7 +427,6 @@ const Dashboard = () => {
           <div className="records-section">
             <div className="records-grid">
 
-              {/* All 6 record cards unchanged */}
               <div className="record-card">
                 <img src={ResultIcon} />
                 <h4 className="record-title">Blood Test Results</h4>
@@ -608,6 +646,8 @@ const Dashboard = () => {
           </button>
         </section>
 
+
+
         <section className="recent-activity">
           <div className="recent-heading">
             <h3>Recent Activity</h3>
@@ -661,7 +701,11 @@ const Dashboard = () => {
             </div>
           </div>
         </section>
-
+        <TransactionApprovalModal
+          isOpen={isTransactionModalOpen}
+          onClose={() => setTransactionModalOpen(false)}
+          transaction={pendingTransaction}
+        />
         <UploadRecordModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
         <GrantAccess isOpen={isShareModalOpen} onClose={() => setShareModalOpen(false)} />
       </>
