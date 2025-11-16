@@ -165,7 +165,7 @@ const DoctorDashboard = () => {
           </div>
 
           <aside className="patient-right">
-            <div className="card">
+            <div className="vitals-card">
               <h3>Active Prescriptions</h3>
               {selectedPatient.prescriptions.length ? selectedPatient.prescriptions.map(rx => (
                 <div className="prescription-item" key={rx.id}>
@@ -181,7 +181,7 @@ const DoctorDashboard = () => {
               )) : <p className="small-muted">No active prescriptions.</p>}
             </div>
 
-            <div className="card">
+            <div className="vitals-card">
               <h3>Latest Vitals</h3>
               <div className="vitals-grid">
                 <div className="vital"><strong>BP</strong><p>{selectedPatient.vitals.bp}</p></div>
