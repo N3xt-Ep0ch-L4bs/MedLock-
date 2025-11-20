@@ -4,21 +4,43 @@ import SuccessICon from "../assets/success-icon1.png"
 import "react-datepicker/dist/react-datepicker.css";
 import "./components.css";
 
-const ShareAccessModal = ({ isOpen, onClose }) => {
+interface ShareAccessModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface Provider {
+  name: string;
+  specialty: string;
+  hospital: string;
+  rating: number;
+  reviews: number;
+  image: string;
+}
+
+interface Record {
+  id: number;
+  title: string;
+  date: string;
+  size: string;
+  image: string;
+}
+
+const ShareAccessModal = ({ isOpen, onClose }: ShareAccessModalProps) => {
   if (!isOpen) return null;
 
   const [step, setStep] = useState(1);
-  const [selectedProvider, setSelectedProvider] = useState(null);
-  const [selectedRecords, setSelectedRecords] = useState([]);
-  const [duration, setDuration] = useState("7d");
-  const [customDate, setCustomDate] = useState(null);
+  const [selectedProvider, setSelectedProvider] = useState<Provider | null>(null);
+  const [selectedRecords, setSelectedRecords] = useState<number[]>([]);
+  const [duration, setDuration] = useState<string>("7d");
+  const [customDate, setCustomDate] = useState<Date | null>(null);
 
   // ✅ Helper to display readable duration
   const formatDuration = () => {
     if (duration === "custom" && customDate) {
       return `Until ${customDate.toLocaleString()}`;
     }
-    const map = {
+    const map: Record<string, string> = {
       "24h": "24 hours",
       "7d": "7 days",
       "30d": "30 days",
@@ -33,7 +55,7 @@ const ShareAccessModal = ({ isOpen, onClose }) => {
     const [reasonInput, setReasonInput] = useState("");
 
 
-  const providers = [
+  const providers: Provider[] = [
     {
       name: "Dr. Alisha Mahmoud",
       specialty: "Cardiology",
@@ -68,7 +90,7 @@ const ShareAccessModal = ({ isOpen, onClose }) => {
     },
   ];
 
-  const records = [
+  const records: Record[] = [
     { id: 1, title: "Blood Test Results", date: "Oct 28, 2024", size: "2.4 MB", image: "src/assets/record-icon1.png" },
     { id: 2, title: "Chest X-Ray", date: "Oct 15, 2024", size: "8.7 MB", image: "src/assets/record-icon2.png" },
     { id: 3, title: "ECG Report", date: "Sep 10, 2024", size: "3.2 MB", image: "src/assets/record-icon3.png" },
@@ -77,7 +99,7 @@ const ShareAccessModal = ({ isOpen, onClose }) => {
     { id: 6, title: "Urinalysis", date: "Aug 28, 2024", size: "1.1 MB", image: "src/assets/record-icon6.png" },
   ];
 
-  const toggleRecord = (id) => {
+  const toggleRecord = (id: number) => {
     setSelectedRecords((prev) =>
       prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]
     );
@@ -433,3 +455,4 @@ const ShareAccessModal = ({ isOpen, onClose }) => {
 };
 
 export default ShareAccessModal;
+

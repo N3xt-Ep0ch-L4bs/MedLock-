@@ -8,8 +8,8 @@ import LoginImage from "../assets/login-image.png";
 import "./pages.css";
 
 const Login = () => {
-  const [role, setRole] = useState("");
-  const [step, setStep] = useState(1); 
+  const [role, setRole] = useState<string>("");
+  const [step, setStep] = useState<number>(1); 
   const navigate = useNavigate();
 
   const goToIdentityStep = () => {
@@ -158,3 +158,4 @@ const Login = () => {
 };
 
 export default Login;
+

@@ -3,8 +3,21 @@ import "./learnmore.css";
 import NavBar from "../components/navbar";
 import { User, Stethoscope, Pill, Code2, FileText, PlayCircle, BookOpen, Mail } from "lucide-react";
 
+interface LearnCard {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  links: string[];
+}
+
+interface Resource {
+  icon: React.ReactNode;
+  title: string;
+  items: string[];
+}
+
 const LearnMore = () => {
-  const learnCards = [
+  const learnCards: LearnCard[] = [
     {
       icon: <User className="learn-icon" />,
       title: "For Patients: Your Data, Your Control",
@@ -51,7 +64,7 @@ const LearnMore = () => {
     },
   ];
 
-  const resources = [
+  const resources: Resource[] = [
     {
       icon: <FileText className="res-icon" />,
       title: "Whitepapers & Technical Docs",
@@ -147,3 +160,4 @@ const LearnMore = () => {
 };
 
 export default LearnMore;
+

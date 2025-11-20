@@ -14,14 +14,20 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-const How = () => {
-  const [openIndex, setOpenIndex] = useState(null);
+interface TechCard {
+  title: string;
+  content: string;
+  list?: string[];
+}
 
-  const toggleCard = (index) => {
+const How = () => {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const toggleCard = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const techCards = [
+  const techCards: TechCard[] = [
     {
       title: "Sui Blockchain: The Foundation of Immutability",
       content:
@@ -207,3 +213,4 @@ const How = () => {
 };
 
 export default How;
+

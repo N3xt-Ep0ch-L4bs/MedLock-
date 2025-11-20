@@ -6,16 +6,21 @@ import HelpIcon from "../assets/help.png";
 import { Settings, Bell, ChevronDown, Verified } from "lucide-react";
 import "./support.css";
 
-const featuredArticles = [
+interface FeaturedArticle {
+  title: string;
+  content: string;
+}
+
+const featuredArticles: FeaturedArticle[] = [
   { title: "How to share records with your doctor", content: "This article guides you through the process of securely sharing your medical records with your trusted healthcare providers. Learn about setting access durations, permissions, and revoking access anytime." },
   { title: "What is end-to-end encryption?", content: "Understand how HealthLock utilizes end-to-end encryption to protect your sensitive medical data, ensuring only you and authorized individuals can access your information." },
   { title: "Understanding your billing statement", content: "Experiencing problems connecting to HealthLock or your wallet? This guide provides common solutions and troubleshooting steps for seamless access." },
 ];
 
 const Support = () => {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const toggleArticle = (idx) => {
+  const toggleArticle = (idx: number) => {
     setOpenIndex(openIndex === idx ? null : idx);
   };
 
@@ -115,3 +120,4 @@ const Support = () => {
 };
 
 export default Support;
+

@@ -41,10 +41,16 @@ import {
   UserLock,
   UserX,
   Pill,
+  XCircle,
 } from "lucide-react";
 import "./dashboard.css";
 
-function UploadRecordModal({ isOpen, onClose }) {
+interface UploadRecordModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function UploadRecordModal({ isOpen, onClose }: UploadRecordModalProps) {
   if (!isOpen) return null;
 
 
@@ -74,7 +80,19 @@ function UploadRecordModal({ isOpen, onClose }) {
   );
 }
 
-const TransactionApprovalModal = ({ isOpen, onClose, transaction }) => {
+interface Transaction {
+  recipient: string;
+  amount: number;
+  networkFee: number;
+}
+
+interface TransactionApprovalModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  transaction: Transaction | null;
+}
+
+const TransactionApprovalModal = ({ isOpen, onClose, transaction }: TransactionApprovalModalProps) => {
   if (!isOpen || !transaction) return null;
 
   const { recipient, amount, networkFee } = transaction;
@@ -106,10 +124,10 @@ const TransactionApprovalModal = ({ isOpen, onClose, transaction }) => {
 
 const SettingsPage = () => {
 
-  const [activeTab, setActiveTab] = useState("personal");
+  const [activeTab, setActiveTab] = useState<string>("personal");
 
-  const [emailNotif, setEmailNotif] = useState(true);
-  const [smsNotif, setSmsNotif] = useState(false);
+  const [emailNotif, setEmailNotif] = useState<boolean>(true);
+  const [smsNotif, setSmsNotif] = useState<boolean>(false);
 
   return (
     <div className="settings-container">
@@ -286,11 +304,11 @@ const SettingsPage = () => {
 
 
 const Dashboard = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
 
-  const [isShareModalOpen, setShareModalOpen] = useState(false);
+  const [isShareModalOpen, setShareModalOpen] = useState<boolean>(false);
 
-  const [currentPage, setCurrentPage] = useState("dashboard");
+  const [currentPage, setCurrentPage] = useState<string>("dashboard");
   const handlePharmacyRequest = () => {
   setPendingTransaction({
     recipient: "CVS Pharmacy - Downtown",
@@ -300,8 +318,8 @@ const Dashboard = () => {
   setTransactionModalOpen(true);
 };
 
-const [isTransactionModalOpen, setTransactionModalOpen] = useState(false);
-const [pendingTransaction, setPendingTransaction] = useState(null);
+const [isTransactionModalOpen, setTransactionModalOpen] = useState<boolean>(false);
+const [pendingTransaction, setPendingTransaction] = useState<Transaction | null>(null);
 
   return (
     <div className="dashboard">
@@ -608,7 +626,7 @@ const [pendingTransaction, setPendingTransaction] = useState(null);
                 </div>
               </div>
               <div className="doctor-actions">
-                <button className="view-btn">View What’s Shared</button>
+                <button className="view-btn">View What's Shared</button>
                 <button className="revoke-btn">Revoke</button>
               </div>
             </div>
@@ -636,7 +654,7 @@ const [pendingTransaction, setPendingTransaction] = useState(null);
                 </div>
               </div>
               <div className="doctor-actions">
-                <button className="view-btn">View What’s Shared</button>
+                <button className="view-btn">View What's Shared</button>
                 <button className="revoke-btn">Revoke</button>
               </div>
             </div>
@@ -721,3 +739,4 @@ const [pendingTransaction, setPendingTransaction] = useState(null);
 };
 
 export default Dashboard;
+
