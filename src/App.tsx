@@ -11,24 +11,27 @@ import Support from "./pages/support";
 import "./App.css";
 import { Import } from "lucide-react";
 import LearnMore from "./pages/learnmore";
+import { EnokiProvider } from "./providers/EnokiProvider";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/howitworks" element={<How />} />
-        <Route path="/learnmore" element={<LearnMore />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/support" element={<Support />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/doctor" element={<Doctor />} />
-        <Route path="/pharmacy" element={<PharmacyDashboard />} />
-        <Route path="/pharmacyHistory" element={<PharmacyHistory />} />
-      </Routes>
-    </Router>
+    <EnokiProvider>
+      <Router>
+        <Routes>
+          
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/howitworks" element={<How />} />
+          <Route path="/learnmore" element={<LearnMore />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/doctor" element={<Doctor />} />
+          <Route path="/pharmacy" element={<PharmacyDashboard />} />
+          <Route path="/pharmacyHistory" element={<PharmacyHistory />} />
+        </Routes>
+      </Router>
+    </EnokiProvider>
   );
 }
 
