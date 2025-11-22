@@ -57,7 +57,7 @@ const About = () => {
       </section>
 
       <section className="difference">
-        <h3>How We’re Different</h3>
+        <h3>How We're Different</h3>
         <div className="diff-cards">
           <div className="diff-card">
             <i className="icon">👤</i>
@@ -73,7 +73,7 @@ const About = () => {
             <h4>Blockchain Security</h4>
             <p>
               Every action is logged into the full blockchain, creating an immutable and
-              auditable trail that can’t be altered.
+              auditable trail that can't be altered.
             </p>
           </div>
         </div>
@@ -84,3 +84,4 @@ const About = () => {
 };
 
 export default About;
+

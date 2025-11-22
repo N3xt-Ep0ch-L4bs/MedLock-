@@ -2,8 +2,20 @@ import React from "react";
 import Logo from "../assets/logo.png"
 import "./pharmacy.css";
 
+interface Record {
+  date: string;
+  id: string;
+  initials: string;
+  patient: string;
+  medication: string;
+  qty: number;
+  pharmacist: string;
+  status: string;
+  blockchain: string;
+}
+
 const PharmacyHistory = () => {
-  const records = [
+  const records: Record[] = [
     { date: "Jan 16, 2025", id: "RX-02457896", initials: "JS", patient: "John Smith", medication: "Lisinopril", qty: 30, pharmacist: "Maria Rodriguez", status: "Dispensed", blockchain: "0x84a5...a39c" },
     { date: "Jan 16, 2025", id: "RX-23487901", initials: "EM", patient: "Emily Martinez", medication: "Metformin", qty: 30, pharmacist: "Maria Rodriguez", status: "Dispensed", blockchain: "0x9bd4...cb22" },
     { date: "Jan 16, 2025", id: "RX-89203164", initials: "MT", patient: "Michael Thompson", medication: "Levothyroxine", qty: 20, pharmacist: "James Chen", status: "Dispensed", blockchain: "0x10a8...9f74" },
@@ -108,3 +120,4 @@ const PharmacyHistory = () => {
 };
 
 export default PharmacyHistory;
+

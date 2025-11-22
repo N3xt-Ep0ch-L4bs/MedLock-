@@ -136,7 +136,7 @@ function LandingPage() {useEffect(() => {
         <div className="review-card">
         <div className="stars">★★★★★</div>
         <p>
-            “Finally, I have complete control over my medical records. Sharing with specialists is instant and secure.”
+            "Finally, I have complete control over my medical records. Sharing with specialists is instant and secure."
         </p>
         <div className="reviewer">
             <img src={PatientLogo} alt="Sarah Martinez" />
@@ -150,7 +150,7 @@ function LandingPage() {useEffect(() => {
         <div className="review-card">
         <div className="stars">★★★★★</div>
         <p>
-            “HealthLock streamlines my practice. Accessing patient history is fast, and prescriptions are tamper-proof.”
+            "HealthLock streamlines my practice. Accessing patient history is fast, and prescriptions are tamper-proof."
         </p>
         <div className="reviewer">
             <img src={DoctorIcon} alt="Dr. James Chen" />
@@ -164,7 +164,7 @@ function LandingPage() {useEffect(() => {
         <div className="review-card">
         <div className="stars">★★★★★</div>
         <p>
-            “Prescription verification is instantaneous. We've eliminated fraud and our patients appreciate the transparency.”
+            "Prescription verification is instantaneous. We've eliminated fraud and our patients appreciate the transparency."
         </p>
         <div className="reviewer">
             <img src={PharmacyIcon} alt="Maria Rodriguez" />
@@ -308,3 +308,4 @@ function LandingPage() {useEffect(() => {
 }
 
 export default LandingPage;
+

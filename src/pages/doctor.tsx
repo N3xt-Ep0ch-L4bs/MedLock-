@@ -3,39 +3,121 @@ import Logo from "../assets/logo.png";
 import { Pill, Settings, Users, Grid2x2, ArrowLeft } from "lucide-react";
 import "./doctor.css";
 
+interface Patient {
+  id: number;
+  name: string;
+  age: number;
+  gender: string;
+  lastVisit: string;
+  initials: string;
+}
+
+interface Stat {
+  img: string;
+  label: string;
+  value: number;
+}
+
+interface Activity {
+  img: string;
+  text: string;
+  time: string;
+}
+
+interface Notification {
+  icon: string;
+  text: string;
+  time: string;
+}
+
+interface PrescriptionData {
+  date: string;
+  patient: string;
+  medication: string;
+  dosage: string;
+  status: string;
+  dispensed: string;
+}
+
+interface Document {
+  id: number;
+  title: string;
+  provider: string;
+  date: string;
+  size: string;
+}
+
+interface Prescription {
+  id: number;
+  name: string;
+  note: string;
+  started: string;
+  status: string;
+}
+
+interface Note {
+  id: number;
+  date: string;
+  text: string;
+}
+
+interface Vitals {
+  bp: string;
+  heartRate: string;
+  weight: string;
+  height: string;
+  bmi: string;
+}
+
+interface PatientDetail {
+  id: number;
+  name: string;
+  age: number;
+  gender: string;
+  initials: string;
+  patientId: string;
+  allergies: string;
+  lastSeen: string;
+  documents: Document[];
+  prescriptions: Prescription[];
+  notes: Note[];
+  vitals: Vitals;
+  medicalHistory: string[];
+}
+
 const DoctorDashboard = () => {
-  const patients = [
+  const patients: Patient[] = [
     { id: 1, name: "Ezekiel Okon", age: 34, gender: "Male", lastVisit: "2 weeks ago", initials: "EO" },
     { id: 2, name: "Sarah Chen", age: 42, gender: "Female", lastVisit: "Today", initials: "SC" },
     { id: 3, name: "Michael Park", age: 29, gender: "Male", lastVisit: "Yesterday", initials: "MP" },
   ];
 
-  const stats = [
+  const stats: Stat[] = [
     { img: "src/assets/stat-header1.png", label: "Active Patients", value: 28 },
     { img: "src/assets/stat-icon2 (1).png", label: "Prescriptions (This Week)", value: 15 },
     { img: "src/assets/stat-header3.png", label: "Pending Access Requests", value: 5 },
   ];
 
-  const activities = [
+  const activities: Activity[] = [
     { img: "src/assets/record-icon3.png", text: "You prescribed Lisinopril 10mg to Sarah Chen", time: "1 hour ago" },
     { img: "src/assets/activity-icon2.png", text: "Access granted by John Doe", time: "3 hours ago" },
     { img: "src/assets/record-icon4.png", text: "You viewed lab results for Michael Park", time: "Yesterday, 4:32 PM" },
     { img: "src/assets/stat-icon2 (1).png", text: "You prescribed Metformin 500mg to Ezekiel Okon", time: "2 days ago" },
   ];
 
-  const notifications = [
+  const notifications: Notification[] = [
     { icon: "🔓", text: "Lisa Johnson granted you access to medical records", time: "15 minutes ago" },
     { icon: "💊", text: "Prescription for Sarah Chen dispensed by CityMed Pharmacy", time: "1 hour ago" },
     { icon: "⚙️", text: "System maintenance scheduled for tonight at 11 PM", time: "3 hours ago" },
     { icon: "🧾", text: "New lab results uploaded for Michael Park", time: "Yesterday" },
   ];
 
-  const prescriptionData = [
+  const prescriptionData: PrescriptionData[] = [
     { date: "Nov 1, 2024 10:30 AM", patient: "Ezekiel Okon", medication: "Lisinopril 10mg", dosage: "Once daily", status: "Active", dispensed: "Not yet" },
     { date: "Oct 30, 2024 2:15 PM", patient: "Sarah Chen", medication: "Atorvastatin 20mg", dosage: "Once daily", status: "Dispensed", dispensed: "Oct 31, 2024" },
   ];
 
-  const samplePatientDetail = {
+  const samplePatientDetail: PatientDetail = {
     id: 1,
     name: "Ezekiel Okon",
     age: 34,
@@ -62,14 +144,14 @@ const DoctorDashboard = () => {
     medicalHistory: ["Hypertension", "Appendectomy (2015)", "Family history: Father - CAD, Mother - Type 2 Diabetes"],
   };
 
-  const [activePage, setActivePage] = useState("dashboard");
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [newNote, setNewNote] = useState("");
-  const [expandedNoteId, setExpandedNoteId] = useState(null);
-  const [searchPatient, setSearchPatient] = useState("");
-  const [searchMedication, setSearchMedication] = useState("");
+  const [activePage, setActivePage] = useState<string>("dashboard");
+  const [selectedPatient, setSelectedPatient] = useState<PatientDetail | null>(null);
+  const [newNote, setNewNote] = useState<string>("");
+  const [expandedNoteId, setExpandedNoteId] = useState<number | null>(null);
+  const [searchPatient, setSearchPatient] = useState<string>("");
+  const [searchMedication, setSearchMedication] = useState<string>("");
 
-  const handleOpenPatient = (p) => {
+  const handleOpenPatient = (p: Patient) => {
     if (p.name === "Ezekiel Okon") setSelectedPatient(structuredClone(samplePatientDetail));
     else setSelectedPatient({
       id: p.id,
@@ -91,12 +173,12 @@ const DoctorDashboard = () => {
 
   const handleAddNote = () => {
     if (!newNote.trim()) return;
-    const newNoteObj = { id: Date.now(), date: new Date().toLocaleDateString(), text: newNote.trim() };
-    setSelectedPatient(prev => ({ ...prev, notes: [...prev.notes, newNoteObj] }));
+    const newNoteObj: Note = { id: Date.now(), date: new Date().toLocaleDateString(), text: newNote.trim() };
+    setSelectedPatient(prev => prev ? ({ ...prev, notes: [...prev.notes, newNoteObj] }) : null);
     setNewNote("");
   };
 
-  const toggleExpanded = (id) => setExpandedNoteId(expandedNoteId === id ? null : id);
+  const toggleExpanded = (id: number) => setExpandedNoteId(expandedNoteId === id ? null : id);
   const handleBack = () => setSelectedPatient(null);
 
   const filteredData = prescriptionData.filter(
@@ -105,7 +187,7 @@ const DoctorDashboard = () => {
   );
 
   // ---------------- Page content ----------------
-  let mainContent;
+  let mainContent: React.ReactNode;
   if (selectedPatient) {
     mainContent = (
       <div className="patient-page">
@@ -256,7 +338,7 @@ const DoctorDashboard = () => {
                 <td><button className="view-btn">View</button></td>
               </tr>
             )) : (
-              <tr><td colSpan="7" style={{textAlign:"center"}}>No prescriptions found</td></tr>
+              <tr><td colSpan={7} style={{textAlign:"center"}}>No prescriptions found</td></tr>
             )}
           </tbody>
         </table>
@@ -360,3 +442,4 @@ const DoctorDashboard = () => {
 };
 
 export default DoctorDashboard;
+

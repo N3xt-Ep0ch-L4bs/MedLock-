@@ -13,13 +13,28 @@ import {
   ClipboardCopy,
 } from "lucide-react";
 
+interface Prescription {
+  id: string;
+  patient: string;
+  initials: string;
+  doctor: string;
+  medication: string;
+  date: string;
+  status: string;
+}
+
+interface RecentActivity {
+  name: string;
+  action: string;
+}
+
 const PharmacyDashboard = () => {
-  const [activeTab, setActiveTab] = useState("Active Prescriptions");
-const [selectedPrescription, setSelectedPrescription] = useState(null);
-const [showPopup, setShowPopup] = useState(false);
-const [showPaymentPopup, setShowPaymentPopup] = useState(false);
-const [showConfirmPopup, setShowConfirmPopup] = useState(false);
-const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>("Active Prescriptions");
+const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
+const [showPopup, setShowPopup] = useState<boolean>(false);
+const [showPaymentPopup, setShowPaymentPopup] = useState<boolean>(false);
+const [showConfirmPopup, setShowConfirmPopup] = useState<boolean>(false);
+const [showPaymentSuccess, setShowPaymentSuccess] = useState<boolean>(false);
 
 useEffect(() => {
   if (showPaymentPopup) {
@@ -31,7 +46,7 @@ useEffect(() => {
   }
 }, [showPaymentPopup]);
 
-  const prescriptions = [
+  const prescriptions: Prescription[] = [
     {
       id: "RX-2847392",
       patient: "John Smith",
@@ -70,14 +85,14 @@ useEffect(() => {
     },
   ];
 
-  const recentActivity = [
+  const recentActivity: RecentActivity[] = [
     { name: "Michael Thompson", action: "Dispensed 15 minutes ago" },
     { name: "Linda White", action: "Dispensed 45 minutes ago" },
     { name: "Patricia Garcia", action: "Dispensed 1 hour ago" },
     { name: "Thomas Anderson", action: "Dispensed 2 hours ago" },
   ];
 
-  const getStatusClass = (status) => {
+  const getStatusClass = (status: string): string => {
     switch (status) {
       case "Ready":
         return "status-ready";
@@ -93,7 +108,7 @@ useEffect(() => {
   };
 
 
-  const handleOpenPrescription = (p) => {
+  const handleOpenPrescription = (p: Prescription) => {
     setSelectedPrescription(p);
     setShowPopup(true);
   };
@@ -354,7 +369,7 @@ useEffect(() => {
                       <p>Safe to dispense – No interactions detected</p>
                     </div>
                     <p className="subtext">
-                      Checked against patient’s current medications and allergies.
+                      Checked against patient's current medications and allergies.
                     </p>
                   </div>
                   <button className="dispense-btn" onClick={() => setShowConfirmPopup(true)}>
@@ -532,3 +547,4 @@ useEffect(() => {
 };
 
 export default PharmacyDashboard;
+

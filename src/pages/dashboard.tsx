@@ -1,0 +1,1303 @@
+import { useState, useEffect, useMemo } from "react";
+import {
+  useCurrentAccount,
+  useCurrentWallet,
+  useSuiClient,
+} from "@mysten/dapp-kit";
+import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
+import { usePatientProfile } from "../hooks/usePatientProfile";
+import { useWalletSigner } from "../hooks/useWalletSigner";
+import { SealWalrusService } from "../services/sealWalrusService";
+import Logo from "../assets/logo.png";
+import RecordIcon from "../assets/stat-icon1.png";
+import PrecriptionIcon from "../assets/stat-icon2.png";
+import DoctorIcon from "../assets/stat-icon3.png";
+import ActivityIcon from "../assets/stat-icon4.png";
+import ResultIcon from "../assets/record-icon1.png";
+import XrayIcon from "../assets/record-icon2.png";
+import LisinoprilIcon from "../assets/record-icon3.png";
+import LipidIcon from "../assets/record-icon4.png";
+import ECGIcon from "../assets/record-icon5.png";
+import UrinalysisIcon from "../assets/record-icon6.png";
+import AishaDp from "../assets/kile-dp.png";
+import JamesDp from "../assets/lin-dp.png";
+import KileDp from "../assets/aisha-dp.png";
+import GrantAccess from "../components/access";
+import {
+  Camera,
+  Check,
+  Download,
+  Printer,
+  Trash2,
+  BadgeQuestionMark,
+  Bell,
+  Calendar,
+  CloudUpload,
+  File,
+  Settings,
+  Lock,
+  Search,
+  LogOut,
+  Copy,
+  Plus,
+  ShieldCheck,
+  User,
+  FileText,
+  ClipboardCheck,
+  Activity,
+  Heart,
+  Eye,
+  UserLock,
+  UserX,
+  Pill,
+  XCircle,
+} from "lucide-react";
+import "./dashboard.css";
+
+interface UploadRecordModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function UploadRecordModal({ isOpen, onClose }: UploadRecordModalProps) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="close-btn" onClick={onClose}>
+          ×
+        </button>
+
+        <h2>Upload Health Record</h2>
+        <p className="subtitle">Your file will be encrypted before upload</p>
+
+        <div className="upload-box">
+          <div className="upload-icon">
+            <CloudUpload size={40} color="#3b82f6" />
+          </div>
+          <p className="upload-text">
+            <strong>Drag and drop your file here</strong>
+            <br />
+            <span>or click to browse</span>
+          </p>
+          <p className="upload-info">PDF, JPG, PNG — Max 50MB</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface TransactionData {
+  recipient: string;
+  amount: number;
+  networkFee: number;
+}
+
+interface TransactionApprovalModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  transaction: TransactionData | null;
+}
+
+const TransactionApprovalModal = ({
+  isOpen,
+  onClose,
+  transaction,
+}: TransactionApprovalModalProps) => {
+  if (!isOpen || !transaction) return null;
+
+  const { recipient, amount, networkFee } = transaction;
+  const total = ((Number(amount) || 0) + (Number(networkFee) || 0)).toFixed(3);
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="transaction-modal" onClick={(e) => e.stopPropagation()}>
+        <h2>Please approve the transaction</h2>
+        <div className="transaction-details">
+          <p>
+            <strong>Recipient:</strong> {recipient}
+          </p>
+          <p>
+            <strong>Amount:</strong> {amount} SUI
+          </p>
+          <p>
+            <strong>Estimated Network Fee:</strong> {networkFee} SUI
+          </p>
+          <p>
+            <strong>Total to Approve:</strong> {total} SUI
+          </p>
+        </div>
+        <div className="transaction-actions">
+          <button
+            className="confirm-btn"
+            onClick={() => {
+              console.log("Transaction confirmed!");
+              onClose();
+            }}
+          >
+            <Check size={16} /> Confirm Transaction
+          </button>
+          <button className="cancel-btn" onClick={onClose}>
+            <XCircle size={16} /> Cancel Transaction
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SettingsPage = () => {
+  const [activeTab, setActiveTab] = useState<string>("personal");
+  const [emailNotif, setEmailNotif] = useState<boolean>(true);
+  const [smsNotif, setSmsNotif] = useState<boolean>(false);
+
+  // Default profile data - all fields empty by default
+  const defaultProfileData = {
+    fullName: "",
+    email: "",
+    phone: "",
+    patientId: "",
+    bloodType: "",
+    allergies: "",
+  };
+
+  // Profile form state
+  const [profileData, setProfileData] = useState(defaultProfileData);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [originalData, setOriginalData] = useState(defaultProfileData);
+  const [dataInitialized, setDataInitialized] = useState(false);
+
+  // Check if profile exists and load profile data
+  const packageId = import.meta.env.VITE_SUI_PACKAGE_ID || "";
+  const network = (import.meta.env.VITE_SUI_NETWORK || "testnet") as
+    | "testnet"
+    | "mainnet"
+    | "devnet";
+  // Optional: allow custom Seal server IDs via environment variable
+  const customSealServerIds = (import.meta.env.VITE_SEAL_SERVER_IDS || "")
+    .split(",")
+    .filter(Boolean);
+  // Enoki private API key for sponsored transactions (should be on backend in production)
+  const enokiPrivateApiKey = import.meta.env.VITE_ENOKI_PRIVATE_API_KEY;
+  const {
+    hasProfile,
+    isLoading: isProfileLoading,
+    profileData: blockchainProfileData,
+    walrusId,
+  } = usePatientProfile(packageId);
+  const account = useCurrentAccount();
+  const { currentWallet } = useCurrentWallet();
+  // Use useSuiClient to get the client from the provider (with correct network)
+  const suiClientFromProvider = useSuiClient();
+
+  // Create Sui client for the correct network (testnet/mainnet/devnet)
+  // Use the client from provider if available, otherwise create one with network URL
+  const suiClient = useMemo(() => {
+    // If provider client is available and connected to the correct network, use it
+    // Otherwise, create a new client with the correct network URL
+    return suiClientFromProvider || new SuiClient({
+      url: getFullnodeUrl(network),
+    });
+  }, [network, suiClientFromProvider]);
+
+  // Initialize Seal/Walrus service using getAllowlistedKeyServers
+  const sealWalrusService = useMemo(() => {
+    if (!packageId) return null;
+    return new SealWalrusService(
+      packageId,
+      network,
+      customSealServerIds.length > 0 ? customSealServerIds : undefined,
+      enokiPrivateApiKey
+    );
+  }, [packageId, network, customSealServerIds.join(","), enokiPrivateApiKey]);
+
+  // Get wallet signer for Walrus operations
+  const walletSigner = useWalletSigner();
+
+  // Load profile from Walrus if walrusId exists
+  useEffect(() => {
+    if (
+      isProfileLoading ||
+      dataInitialized ||
+      isEditing ||
+      !sealWalrusService ||
+      !account?.address
+    )
+      return;
+
+    const loadFromWalrus = async () => {
+      // Check both hook walrusId and localStorage
+      const storedWalrusId = localStorage.getItem(
+        `walrusId_${account.address}`
+      );
+      const profileWalrusId = walrusId || storedWalrusId;
+
+      if (profileWalrusId) {
+        try {
+          const walrusProfileData = await sealWalrusService.loadProfile(
+            profileWalrusId,
+            account.address
+          );
+
+          if (walrusProfileData) {
+            const mergedData = {
+              ...defaultProfileData,
+              ...walrusProfileData,
+              patientId:
+                walrusProfileData.patientId || defaultProfileData.patientId,
+            };
+            setProfileData(mergedData);
+            setOriginalData(mergedData);
+            setDataInitialized(true);
+            return;
+          }
+        } catch (error) {
+          console.error("Error loading profile from Walrus:", error);
+        }
+      }
+
+      // Fallback to blockchain data or defaults
+      if (
+        blockchainProfileData &&
+        Object.keys(blockchainProfileData).length > 0
+      ) {
+        const mergedData = {
+          ...defaultProfileData,
+          ...blockchainProfileData,
+          patientId:
+            blockchainProfileData.patientId || defaultProfileData.patientId,
+        };
+        setProfileData(mergedData);
+        setOriginalData(mergedData);
+        setDataInitialized(true);
+      } else if (!hasProfile && !isProfileLoading) {
+        setProfileData(defaultProfileData);
+        setOriginalData(defaultProfileData);
+        setDataInitialized(true);
+      }
+    };
+
+    loadFromWalrus();
+  }, [
+    walrusId,
+    blockchainProfileData,
+    hasProfile,
+    isProfileLoading,
+    isEditing,
+    dataInitialized,
+    sealWalrusService,
+    account?.address,
+    currentWallet,
+  ]);
+
+  // Handle input changes
+  const handleInputChange = (field: string, value: string) => {
+    setProfileData((prev) => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+  };
+
+  // Start editing
+  const handleEdit = () => {
+    setOriginalData(profileData);
+    setIsEditing(true);
+    setHasChanges(false);
+  };
+
+  // Cancel editing
+  const handleCancel = () => {
+    setProfileData(originalData);
+    setIsEditing(false);
+    setHasChanges(false);
+  };
+
+  // Save profile
+  const handleSave = async () => {
+    if (!account?.address || !sealWalrusService || !walletSigner) {
+      alert("Wallet not connected. Please connect your wallet first.");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      if (!walletSigner) {
+        throw new Error("Wallet signer not available. Please ensure your wallet is connected.");
+      }
+
+      // Encrypt and save to Walrus
+      const { walrusId: newWalrusId, backupKey } =
+        await sealWalrusService.saveProfile(
+          profileData,
+          account.address,
+          walletSigner,
+          2, // threshold
+          3 // epochs
+        );
+
+      // TODO: Store walrusId in on-chain Profile object
+      // For now, we'll store it in localStorage as a temporary solution
+      // In production, you should create/update a Profile object on-chain with the walrusId
+      if (newWalrusId) {
+        localStorage.setItem(`walrusId_${account.address}`, newWalrusId);
+        if (backupKey) {
+          localStorage.setItem(`backupKey_${account.address}`, backupKey);
+          console.log(
+            "Backup key saved. Store this securely for disaster recovery."
+          );
+        }
+      }
+
+      setOriginalData(profileData);
+      setIsEditing(false);
+      setHasChanges(false);
+
+      alert("Profile encrypted and saved successfully!");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+      alert(
+        `Failed to save profile: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="settings-container">
+      {/* TITLE */}
+      <h2 className="settings-page-title">Settings</h2>
+
+      {/* Profile Setup Alert */}
+      {!isProfileLoading && !hasProfile && packageId && (
+        <div
+          style={{
+            backgroundColor: "#fff3cd",
+            border: "1px solid #ffc107",
+            borderRadius: "8px",
+            padding: "1rem",
+            marginBottom: "1.5rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem",
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <strong style={{ display: "block", marginBottom: "0.5rem" }}>
+              Profile Setup Required
+            </strong>
+            <p style={{ margin: 0, fontSize: "0.875rem", color: "#666" }}>
+              You need to set up your patient profile to continue using MedLock.
+              Please fill out the information below to create your profile.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* TABS */}
+      <div className="settings-tabs">
+        <button
+          className={activeTab === "personal" ? "active" : ""}
+          onClick={() => setActiveTab("personal")}
+        >
+          Personal
+        </button>
+
+        <button
+          className={activeTab === "preferences" ? "active" : ""}
+          onClick={() => setActiveTab("preferences")}
+        >
+          Preferences
+        </button>
+      </div>
+
+      {activeTab === "personal" && (
+        <div className="settings-card">
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <h3 className="section-title" style={{ margin: 0 }}>
+              Profile
+            </h3>
+            {!isEditing ? (
+              <button
+                className="field-action-btn"
+                onClick={handleEdit}
+                style={{ margin: 0 }}
+              >
+                <Settings size={14} style={{ marginRight: "0.5rem" }} />
+                Edit Profile
+              </button>
+            ) : (
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
+                  className="field-action-btn"
+                  onClick={handleCancel}
+                  disabled={isSaving}
+                  style={{
+                    margin: 0,
+                    backgroundColor: "#f3f4f6",
+                    color: "#374151",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="field-action-btn"
+                  onClick={handleSave}
+                  disabled={isSaving || !hasChanges}
+                  style={{
+                    margin: 0,
+                    backgroundColor: "#3b82f6",
+                    color: "white",
+                    opacity: !hasChanges || isSaving ? 0.6 : 1,
+                  }}
+                >
+                  {isSaving ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="profile-header">
+            <div className="initial-circle">
+              {profileData.fullName
+                ? profileData.fullName
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                    .slice(0, 2)
+                : "??"}
+            </div>
+            <button
+              className="change-photo-btn"
+              disabled={!isEditing}
+              style={{
+                opacity: isEditing ? 1 : 0.6,
+                cursor: isEditing ? "pointer" : "not-allowed",
+              }}
+            >
+              <Camera size={16} /> Change Photo
+            </button>
+          </div>
+
+          <div className="settings-field">
+            <label>Full Name</label>
+            <input
+              type="text"
+              value={profileData.fullName}
+              readOnly={!isEditing}
+              onChange={(e) => handleInputChange("fullName", e.target.value)}
+              style={{
+                cursor: isEditing ? "text" : "not-allowed",
+                backgroundColor: isEditing ? "white" : "#f9fafb",
+              }}
+            />
+          </div>
+
+          <div className="settings-field">
+            <label>Email Address</label>
+            <div className="field-row">
+              <input
+                type="email"
+                value={profileData.email}
+                readOnly={!isEditing}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+                style={{
+                  cursor: isEditing ? "text" : "not-allowed",
+                  backgroundColor: isEditing ? "white" : "#f9fafb",
+                }}
+              />
+              <span className="verified">
+                <Check size={14} /> Verified
+              </span>
+              {!isEditing && (
+                <button className="field-action-btn">Change</button>
+              )}
+            </div>
+          </div>
+
+          <div className="settings-field">
+            <label>Phone Number</label>
+            <div className="field-row">
+              <input
+                type="tel"
+                value={profileData.phone}
+                readOnly={!isEditing}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
+                style={{
+                  cursor: isEditing ? "text" : "not-allowed",
+                  backgroundColor: isEditing ? "white" : "#f9fafb",
+                }}
+              />
+              <span className="verified">
+                <Check size={14} /> Verified
+              </span>
+              {!isEditing && (
+                <button className="field-action-btn">Change</button>
+              )}
+            </div>
+          </div>
+
+          <div className="settings-field">
+            <label>Patient ID</label>
+            <input
+              type="text"
+              className="readonly-input"
+              value={profileData.patientId}
+              readOnly
+              style={{
+                cursor: "not-allowed",
+                backgroundColor: "#f9fafb",
+              }}
+            />
+            <small
+              style={{
+                display: "block",
+                marginTop: "0.25rem",
+                color: "#6b7280",
+                fontSize: "0.75rem",
+              }}
+            >
+              Patient ID cannot be changed
+            </small>
+          </div>
+
+          <h3 className="section-title" style={{ marginTop: "25px" }}>
+            Health Information
+          </h3>
+
+          <div className="settings-field">
+            <label>Blood Type</label>
+            {isEditing ? (
+              <select
+                value={profileData.bloodType}
+                onChange={(e) => handleInputChange("bloodType", e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.5rem",
+                  borderRadius: "6px",
+                  border: "1px solid #d1d5db",
+                  fontSize: "1rem",
+                }}
+              >
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={profileData.bloodType}
+                readOnly
+                style={{
+                  cursor: "not-allowed",
+                  backgroundColor: "#f9fafb",
+                }}
+              />
+            )}
+          </div>
+
+          <div className="settings-field">
+            <label>Known Allergies</label>
+            <textarea
+              value={profileData.allergies}
+              readOnly={!isEditing}
+              onChange={(e) => handleInputChange("allergies", e.target.value)}
+              style={{
+                cursor: isEditing ? "text" : "not-allowed",
+                backgroundColor: isEditing ? "white" : "#f9fafb",
+                minHeight: "80px",
+                resize: "vertical",
+              }}
+            />
+            <small className="char-limit">
+              {profileData.allergies.length}/200 characters
+            </small>
+          </div>
+
+          {!isEditing && (
+            <button className="view-profile-btn">
+              View Complete Medical Profile
+            </button>
+          )}
+        </div>
+      )}
+
+      {activeTab === "preferences" && (
+        <div className="preferences-wrapper">
+          <div className="pref-card">
+            <h3 className="section-title">Notifications</h3>
+
+            <div className="pref-row">
+              <div>
+                <p className="pref-label">Email Notifications</p>
+                <button className="pref-link">Customize Email</button>
+              </div>
+
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={emailNotif}
+                  onChange={() => setEmailNotif(!emailNotif)}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+
+            <div className="pref-row">
+              <div>
+                <p className="pref-label">SMS Notifications</p>
+                <button className="pref-link">Customize SMS</button>
+              </div>
+
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={smsNotif}
+                  onChange={() => setSmsNotif(!smsNotif)}
+                />
+                <span className="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          {/* RIGHT CARD — SUPPORT & FEEDBACK */}
+          <div className="pref-card">
+            <h3 className="section-title">Support & Feedback</h3>
+
+            <div className="support-row">
+              <p>Contact Support</p>
+              <button className="support-btn">Contact Support</button>
+            </div>
+
+            <div className="support-row">
+              <p>Provide Feedback</p>
+              <button className="support-btn">Provide Feedback</button>
+            </div>
+
+            <div className="support-row">
+              <p>Help Center Resources</p>
+              <button className="pref-link">Visit Help Center</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FOOTER BUTTONS */}
+      <div className="settings-footer-actions">
+        <button className="download-btn">
+          <Download size={16} /> Download My Data
+        </button>
+
+        <button className="print-btn">
+          <Printer size={16} /> Print Health Summary
+        </button>
+
+        <button className="delete-btn">
+          <Trash2 size={16} /> Delete Account
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Dashboard = () => {
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [isShareModalOpen, setShareModalOpen] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<string>("dashboard");
+  const account = useCurrentAccount();
+
+  // Get package ID from environment variables
+  const packageId = import.meta.env.VITE_SUI_PACKAGE_ID || "";
+
+  // Check for patient profile
+  const { hasProfile, isLoading: isProfileLoading } =
+    usePatientProfile(packageId);
+  const [hasCheckedProfile, setHasCheckedProfile] = useState(false);
+
+  // Redirect to settings if profile not found (only for patients)
+  useEffect(() => {
+    if (!isProfileLoading && account?.address && !hasCheckedProfile) {
+      setHasCheckedProfile(true);
+      if (!hasProfile && packageId) {
+        // Profile not found, redirect to settings
+        setCurrentPage("settings");
+      }
+    }
+  }, [
+    hasProfile,
+    isProfileLoading,
+    account?.address,
+    hasCheckedProfile,
+    packageId,
+  ]);
+
+  const handlePharmacyRequest = () => {
+    setPendingTransaction({
+      recipient: "CVS Pharmacy - Downtown",
+      amount: 24.5,
+      networkFee: 0.001,
+    });
+    setTransactionModalOpen(true);
+  };
+
+  const [isTransactionModalOpen, setTransactionModalOpen] =
+    useState<boolean>(false);
+  const [pendingTransaction, setPendingTransaction] =
+    useState<TransactionData | null>(null);
+
+  // Show loading state while checking for profile
+  if (isProfileLoading && !hasCheckedProfile) {
+    return (
+      <div className="dashboard">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            flexDirection: "column",
+            gap: "1rem",
+          }}
+        >
+          <div>Loading...</div>
+          <div style={{ fontSize: "0.875rem", color: "#666" }}>
+            Checking your profile...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="dashboard">
+      <aside className="sidebar">
+        <nav className="sidebar-nav">
+          <a
+            className={`sidebar-link ${
+              currentPage === "dashboard" ? "active" : ""
+            }`}
+            onClick={() => setCurrentPage("dashboard")}
+          >
+            <ShieldCheck size={18} /> Dashboard
+          </a>
+
+          <a
+            className={`sidebar-link ${
+              currentPage === "records" ? "active" : ""
+            }`}
+            onClick={() => setCurrentPage("records")}
+          >
+            <FileText size={18} /> My Records
+          </a>
+
+          <a
+            className={`sidebar-link ${
+              currentPage === "prescriptions" ? "active" : ""
+            }`}
+            onClick={() => setCurrentPage("prescriptions")}
+          >
+            <ClipboardCheck size={18} /> Prescriptions
+          </a>
+
+          <a
+            className={`sidebar-link ${
+              currentPage === "shared" ? "active" : ""
+            }`}
+            onClick={() => setCurrentPage("shared")}
+          >
+            <User size={18} /> Shared Access
+          </a>
+
+          <a
+            className={`sidebar-link ${
+              currentPage === "activity" ? "active" : ""
+            }`}
+            onClick={() => setCurrentPage("activity")}
+          >
+            <Activity size={18} /> Activity Log
+          </a>
+
+          <a
+            className={`sidebar-link ${
+              currentPage === "settings" ? "active" : ""
+            }`}
+            onClick={() => setCurrentPage("settings")}
+          >
+            <Settings size={18} /> Settings
+          </a>
+        </nav>
+        <a className="logout-link">
+          <LogOut size={18} /> Sign Out
+        </a>
+      </aside>
+      <div>
+        <header className="topbar">
+          <div className="sidebar-header">
+            <img src={Logo} alt="MedLock Logo" className="sidebar-logo" />
+            <h1 className="sidebar-title">MedLock</h1>
+          </div>
+          <div className="search-box">
+            <Search size={18} />
+            <input
+              type="text"
+              placeholder="Search your record, prescriptions…"
+            />
+          </div>
+          <div className="topbar-right">
+            <Bell size={20} className="icon" />
+            <Settings size={20} className="icon" />
+            <div className="profile">EO</div>
+          </div>
+        </header>
+
+        <div className="main-area">
+          <main className="main-content">
+            {currentPage === "dashboard" && (
+              <>
+                <div className="welcome-card">
+                  <div className="welcome-text">
+                    <h2>Good afternoon, Ezekiel 👋</h2>
+                    <p>Your health data is secure and encrypted</p>
+                  </div>
+                  <button
+                    className="upload-btn"
+                    onClick={() => setModalOpen(true)}
+                  >
+                    <Plus size={16} /> Upload New Record
+                  </button>
+                </div>
+
+                <div className="caads">
+                  <div className="stats-container">
+                    <div className="stat-card">
+                      <img src={RecordIcon} />
+                      <h4 className="stat-title">Records</h4>
+                      <p className="stat-value">12</p>
+                      <p className="stat-note">↑ 2 this month</p>
+                    </div>
+
+                    <div className="stat-card">
+                      <img src={PrecriptionIcon} />
+                      <h4 className="stat-title">Active Prescriptions</h4>
+                      <p className="stat-value">3</p>
+                      <p className="stat-note">No change</p>
+                    </div>
+
+                    <div className="stat-card">
+                      <img src={DoctorIcon} />
+                      <h4 className="stat-title">Doctors</h4>
+                      <p className="stat-value">2</p>
+                      <p className="stat-note">Current access</p>
+                    </div>
+
+                    <div className="stat-card">
+                      <img src={ActivityIcon} />
+                      <h4 className="stat-title">Activity Events</h4>
+                      <p className="stat-value">24</p>
+                      <p className="stat-note">Last 7 days</p>
+                    </div>
+                  </div>
+
+                  <div className="records-header">
+                    <h3>My Health Records</h3>
+                    <a href="#" className="view-all">
+                      View All 12 Records →
+                    </a>
+                  </div>
+
+                  <div className="records-section">
+                    <div className="records-grid">
+                      <div className="record-card">
+                        <img src={ResultIcon} />
+                        <h4 className="record-title">Blood Test Results</h4>
+                        <p className="record-meta">
+                          <Calendar size={14} /> Oct 23, 2024 •{" "}
+                          <File size={13} /> 4 MB
+                        </p>
+                        <div className="record-tags">
+                          <span className="record-tag">
+                            Shared with 2 doctors
+                          </span>
+                          <span className="record-tag">Encrypted</span>
+                        </div>
+                        <div className="record-footer">
+                          <span>
+                            <Lock size={13} /> Private
+                          </span>
+                          <span>⋯</span>
+                        </div>
+                      </div>
+
+                      <div className="record-card">
+                        <img src={XrayIcon} />
+                        <h4 className="record-title">Chest X-Ray</h4>
+                        <p className="record-meta">
+                          <Calendar size={14} /> Oct 15, 2024 •{" "}
+                          <File size={13} /> 7 MB
+                        </p>
+                        <div className="record-tags">
+                          <span className="record-tag">Encrypted</span>
+                        </div>
+                        <div className="record-footer">
+                          <span>
+                            <Lock size={13} /> Private
+                          </span>
+                          <span>⋯</span>
+                        </div>
+                      </div>
+
+                      <div className="record-card">
+                        <img src={LisinoprilIcon} />
+                        <h4 className="record-title">
+                          Prescription - Lisinopril
+                        </h4>
+                        <p className="record-meta">
+                          <Calendar size={14} /> Oct 10, 2024 •{" "}
+                          <File size={13} /> 3.4 KB
+                        </p>
+                        <div className="record-tags">
+                          <span className="record-tag">
+                            Shared with 1 pharmacy
+                          </span>
+                          <span className="record-tag">Encrypted</span>
+                        </div>
+                        <div className="record-footer">
+                          <span>
+                            <Lock size={13} /> Private
+                          </span>
+                          <span>⋯</span>
+                        </div>
+                      </div>
+
+                      <div className="record-card">
+                        <img src={LipidIcon} />
+                        <h4 className="record-title">Lipid Panel</h4>
+                        <p className="record-meta">
+                          <Calendar size={14} /> Sep 22, 2024 •
+                          <File size={13} />4 MB
+                        </p>
+                        <div className="record-tags">
+                          <span className="record-tag">Encrypted</span>
+                        </div>
+                        <div className="record-footer">
+                          <span> Shared with 1 Doctor</span>
+                          <span>⋯</span>
+                        </div>
+                      </div>
+
+                      <div className="record-card">
+                        <img src={ECGIcon} />
+                        <h4 className="record-title">ECG Report</h4>
+                        <p className="record-meta">
+                          <Calendar size={14} /> Sep 10, 2024 •
+                          <File size={13} /> 2 MB
+                        </p>
+                        <div className="record-tags">
+                          <span className="record-tag">Encrypted</span>
+                        </div>
+                        <div className="record-footer">
+                          <span>
+                            <Lock size={13} /> Private
+                          </span>
+                          <span>⋯</span>
+                        </div>
+                      </div>
+
+                      <div className="record-card">
+                        <img src={UrinalysisIcon} />
+                        <h4 className="record-title">Urinalysis</h4>
+                        <p className="record-meta">
+                          <Calendar size={14} /> Sep 10, 2024 •{" "}
+                          <File size={13} /> 2 MB
+                        </p>
+                        <div className="record-tags">
+                          <span className="record-tag">Encrypted</span>
+                        </div>
+                        <div className="record-footer">
+                          <span>
+                            <Lock size={13} /> Private
+                          </span>
+                          <span>⋯</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <section className="prescriptions-section">
+                  <div className="section-header">
+                    <h3>Active Prescriptions</h3>
+                    <a href="#" className="view-all">
+                      View All Prescriptions →
+                    </a>
+                  </div>
+
+                  <div className="prescription-card">
+                    <div className="prescription-info">
+                      <div className="doc">
+                        <img
+                          src={KileDp}
+                          alt="Dr. Aisha"
+                          className="doctor-avatar"
+                        />
+                        <div>
+                          <h4>Dr. Aisha Mahmoud</h4>
+                          <p>Cardiologist</p>
+                        </div>
+                      </div>
+                      <div className="med-info">
+                        <h4>Lisinopril 10mg</h4>
+                        <p>Once daily, take with food</p>
+                        <small>30 days supply</small>
+                      </div>
+                    </div>
+                    <div className="prescription-meta">
+                      <span className="status active">● Active</span>
+                      <p>Oct 28, 2024</p>
+                      <button>View Details</button>
+                    </div>
+                  </div>
+                  <div className="prescription-card">
+                    <div className="prescription-info">
+                      <div className="doc">
+                        <img
+                          src={JamesDp}
+                          alt="Dr. James"
+                          className="doctor-avatar"
+                        />
+                        <div>
+                          <h4>Dr. James Lin</h4>
+                          <p>Primary Care</p>
+                        </div>
+                      </div>
+                      <div className="med-info">
+                        <h4>Metformin 500mg</h4>
+                        <p>Twice daily with meals</p>
+                        <small>90 days supply</small>
+                      </div>
+                    </div>
+                    <div className="prescription-meta">
+                      <span className="status active">● Active</span>
+                      <p>Oct 15, 2024</p>
+                      <button>View Details</button>
+                    </div>
+                  </div>
+
+                  <div className="prescription-card">
+                    <div className="prescription-info">
+                      <div className="doc">
+                        <img
+                          src={AishaDp}
+                          alt="Dr. Aisha"
+                          className="doctor-avatar"
+                        />
+                        <div>
+                          <h4>Dr. Aisha Mahmoud</h4>
+                          <p>Cardiologist</p>
+                        </div>
+                      </div>
+                      <div className="med-info">
+                        <h4>Atorvastatin 20mg</h4>
+                        <p>Once daily at bedtime</p>
+                        <small>30 days supply</small>
+                      </div>
+                    </div>
+                    <div className="prescription-meta">
+                      <span className="status dispensed">✔ Dispensed</span>
+                      <p>Oct 10, 2024</p>
+                      <button>View Details</button>
+                    </div>
+                  </div>
+                </section>
+                <section className="doctors-access">
+                  <h3>Doctors with Access</h3>
+
+                  <div className="doctor-access-grid">
+                    <div className="doctor-card">
+                      <div className="doctor-info">
+                        <img
+                          src={AishaDp}
+                          alt="Dr. Aisha"
+                          className="doctor-avatar"
+                        />
+                        <div>
+                          <h4>Dr. Aisha Mahmoud</h4>
+                          <p>Cardiology • City Medical Center</p>
+                        </div>
+                      </div>
+                      <div className="doctor-details">
+                        <div>
+                          <p>Access granted</p>
+                          <strong>Oct 15, 2024</strong>
+                        </div>
+                        <div>
+                          <p>Expires in</p>
+                          <strong className="expiring">6 days</strong>
+                        </div>
+                        <div>
+                          <p>Records shared</p>
+                          <strong>8 files</strong>
+                        </div>
+                      </div>
+                      <div className="doctor-actions">
+                        <button className="view-btn">View What's Shared</button>
+                        <button className="revoke-btn">Revoke</button>
+                      </div>
+                    </div>
+
+                    <div className="doctor-card">
+                      <div className="doctor-info">
+                        <img
+                          src={JamesDp}
+                          alt="Dr. James"
+                          className="doctor-avatar"
+                        />
+                        <div>
+                          <h4>Dr. James Lin</h4>
+                          <p>Primary Care • Wellness Clinic</p>
+                        </div>
+                      </div>
+                      <div className="doctor-details">
+                        <div>
+                          <p>Access granted</p>
+                          <strong>Oct 1, 2024</strong>
+                        </div>
+                        <div>
+                          <p>Expires in</p>
+                          <strong className="expiring">22 days</strong>
+                        </div>
+                        <div>
+                          <p>Records shared</p>
+                          <strong>5 files</strong>
+                        </div>
+                      </div>
+                      <div className="doctor-actions">
+                        <button className="view-btn">View What's Shared</button>
+                        <button className="revoke-btn">Revoke</button>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    className="grant-btn"
+                    onClick={() => setShareModalOpen(true)}
+                  >
+                    + Grant New Access
+                  </button>
+                </section>
+
+                <section className="recent-activity">
+                  <div className="recent-heading">
+                    <h3>Recent Activity</h3>
+                    <a href="#" className="view-all">
+                      View All Activity →
+                    </a>
+                  </div>
+
+                  <div className="activity-timeline">
+                    <div className="activity-item">
+                      <div className="activity-icon">
+                        <CloudUpload size={15} />
+                      </div>
+                      <div className="activity-content">
+                        <p>Uploaded Blood Test Results</p>
+                        <span className="activity-time">2 hours ago</span>
+                        <div className="activity-hash">
+                          0xA2B3C4... <Copy size={11} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="activity-item">
+                      <div className="activity-icon">
+                        <UserLock size={15} />
+                      </div>
+                      <div className="activity-content">
+                        <p>Granted Dr. Aisha access to ECG Report</p>
+                        <span className="activity-time">1 day ago</span>
+                        <div className="activity-hash">
+                          0xD4E5F6... <Copy size={11} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="activity-item">
+                      <div className="activity-icon">
+                        <Eye size={15} />
+                      </div>
+                      <div className="activity-content">
+                        <p>Dr. James viewed Metformin Prescription</p>
+                        <span className="activity-time">2 days ago</span>
+                        <div className="activity-hash">
+                          0xG7H8I9... <Copy size={11} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="activity-item">
+                      <div className="activity-icon">
+                        <Pill size={15} />
+                      </div>
+                      <div className="activity-content">
+                        <p>Dispensed Atorvastatin to Pharmacy</p>
+                        <span className="activity-time">3 days ago</span>
+                        <div className="activity-hash">
+                          0xJ1K2L3... <Copy size={11} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="activity-item">
+                      <div className="activity-icon">
+                        <UserX size={15} />
+                      </div>
+                      <div className="activity-content">
+                        <p>Revoked Dr. Aisha access to Urinalysis</p>
+                        <span className="activity-time">4 days ago</span>
+                        <div className="activity-hash">
+                          0xM4N5O6... <Copy size={11} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <TransactionApprovalModal
+                  isOpen={isTransactionModalOpen}
+                  onClose={() => setTransactionModalOpen(false)}
+                  transaction={pendingTransaction}
+                />
+                <UploadRecordModal
+                  isOpen={isModalOpen}
+                  onClose={() => setModalOpen(false)}
+                />
+                <GrantAccess
+                  isOpen={isShareModalOpen}
+                  onClose={() => setShareModalOpen(false)}
+                />
+              </>
+            )}
+
+            {currentPage === "settings" && <SettingsPage />}
+          </main>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
