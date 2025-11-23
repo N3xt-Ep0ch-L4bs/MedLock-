@@ -26,6 +26,7 @@ interface ProfileCheckResult {
   profileObjectId: string | null;
   profileData: ProfileData | null;
   walrusId: string | null;
+  recordsId: string | null; // Records object ID from Profile
 }
 
 /**
@@ -43,6 +44,7 @@ export function usePatientProfile(packageId: string): ProfileCheckResult {
   const [profileObjectId, setProfileObjectId] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [walrusId, setWalrusId] = useState<string | null>(null);
+  const [recordsId, setRecordsId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!account?.address || !packageId || !packageId.trim()) {
@@ -84,6 +86,7 @@ export function usePatientProfile(packageId: string): ProfileCheckResult {
         if (result.data && result.data.length > 0) {
           // Profile found - get the first one
           const profileObject = result.data[0];
+          console.log('profileObject:', profileObject);
           const objectId = profileObject.data?.objectId || null;
           setProfileObjectId(objectId);
           setHasProfile(true);
@@ -99,11 +102,41 @@ export function usePatientProfile(packageId: string): ProfileCheckResult {
               bloodType: fields.blood_type || fields.bloodType || '',
               allergies: fields.allergies || '',
             });
-            // Extract walrusId if present
-            setWalrusId(fields.walrus_id || fields.walrusId || null);
+            // Extract walrusId from profile_cid (it's stored as vector<u8>)
+            // Sui returns vector<u8> as base64-encoded string
+            const profileCid = fields.profile_cid;
+            if (profileCid) {
+              try {
+                // profile_cid is vector<u8> which Sui returns as base64 string
+                // We need to decode it from base64 to get the original walrusId string
+                if (typeof profileCid === 'string') {
+                  // Decode base64 to get the original string
+                  const decodedBytes = Uint8Array.from(atob(profileCid), c => c.charCodeAt(0));
+                  const decoded = new TextDecoder().decode(decodedBytes);
+                  setWalrusId(decoded);
+                } else if (Array.isArray(profileCid)) {
+                  // If it's already an array of numbers, decode directly
+                  const decoded = new TextDecoder().decode(new Uint8Array(profileCid));
+                  setWalrusId(decoded);
+                }
+              } catch (e) {
+                console.warn('Failed to decode profile_cid:', e, profileCid);
+              }
+            }
+            // Extract records ID from Profile object
+            // records is an ID type, which Sui returns as a string
+            const recordsIdValue = fields.records;
+            if (recordsIdValue) {
+              // ID fields are returned as strings
+              const recordsIdStr = typeof recordsIdValue === 'string' 
+                ? recordsIdValue 
+                : recordsIdValue?.id || String(recordsIdValue);
+              setRecordsId(recordsIdStr);
+            }
           } else {
             setProfileData(null);
             setWalrusId(null);
+            setRecordsId(null);
           }
         } else {
           // No profile found
@@ -111,6 +144,7 @@ export function usePatientProfile(packageId: string): ProfileCheckResult {
           setProfileObjectId(null);
           setProfileData(null);
           setWalrusId(null);
+          setRecordsId(null);
         }
       } catch (err) {
         console.error('Error checking for patient profile:', err);
@@ -131,6 +165,7 @@ export function usePatientProfile(packageId: string): ProfileCheckResult {
     profileObjectId,
     profileData,
     walrusId,
+    recordsId,
   };
 }
 

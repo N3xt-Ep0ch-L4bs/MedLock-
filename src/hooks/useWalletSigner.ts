@@ -1,6 +1,6 @@
 "use client";
 
-import { useCurrentAccount, useSignAndExecuteTransaction } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignAndExecuteTransaction, useSignPersonalMessage } from "@mysten/dapp-kit";
 import { Transaction } from "@mysten/sui/transactions";
 import { useMemo } from "react";
 import type { Signer } from "@mysten/sui/cryptography";
@@ -12,6 +12,7 @@ import type { Signer } from "@mysten/sui/cryptography";
 export function useWalletSigner(): Signer | null {
   const currentAccount = useCurrentAccount();
   const { mutateAsync: signAndExecuteTransactionAsync } = useSignAndExecuteTransaction();
+  const { mutateAsync: signPersonalMessageAsync } = useSignPersonalMessage();
 
   return useMemo(() => {
     if (!currentAccount || !signAndExecuteTransactionAsync) {
@@ -48,8 +49,43 @@ export function useWalletSigner(): Signer | null {
         throw new Error("Sign with intent not implemented for Walrus signer");
       },
       signPersonalMessage: async (bytes: Uint8Array) => {
-        // Sign personal message - not typically used by Walrus
-        throw new Error("Personal message signing not implemented for Walrus signer");
+        // Sign personal message using dapp-kit hook
+        if (!signPersonalMessageAsync) {
+          throw new Error("Personal message signing not available. Please ensure your wallet supports personal message signing.");
+        }
+        try {
+          const result = await signPersonalMessageAsync({
+            message: bytes,
+          });
+          // Return the signature bytes
+          // The result should have a signature field that contains the signature
+          // It might be a Uint8Array, base64 string, or hex string
+          if (!result.signature) {
+            throw new Error("No signature returned from personal message signing");
+          }
+          
+          // Handle different signature formats
+          if (result.signature instanceof Uint8Array) {
+            return result.signature;
+          } else if (typeof result.signature === 'string') {
+            // If it's a base64 string, decode it
+            // Check if it's base64 or hex
+            if (result.signature.startsWith('0x')) {
+              // Hex string - convert to Uint8Array
+              const hex = result.signature.slice(2);
+              return new Uint8Array(hex.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []);
+            } else {
+              // Assume base64 - decode it
+              const binaryString = atob(result.signature);
+              return new Uint8Array(binaryString.length).map((_, i) => binaryString.charCodeAt(i));
+            }
+          } else {
+            throw new Error(`Unexpected signature format: ${typeof result.signature}`);
+          }
+        } catch (error) {
+          console.error("Error signing personal message:", error);
+          throw new Error(`Failed to sign personal message: ${error instanceof Error ? error.message : "Unknown error"}`);
+        }
       },
       signAndExecuteTransaction: async ({ transaction, client }: { transaction: Transaction; client: any }) => {
         // Walrus provides a Transaction object (not bytes) and a client
@@ -228,6 +264,6 @@ export function useWalletSigner(): Signer | null {
         return "ZkLogin" as any;
       },
     } as unknown as Signer;
-  }, [currentAccount, signAndExecuteTransactionAsync]);
+  }, [currentAccount, signAndExecuteTransactionAsync, signPersonalMessageAsync]);
 }
 

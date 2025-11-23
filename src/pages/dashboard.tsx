@@ -1,10 +1,14 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   useCurrentAccount,
   useCurrentWallet,
   useSuiClient,
+  useDisconnectWallet,
+  useSignAndExecuteTransaction,
 } from "@mysten/dapp-kit";
 import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
+import { Transaction } from "@mysten/sui/transactions";
 import { usePatientProfile } from "../hooks/usePatientProfile";
 import { useWalletSigner } from "../hooks/useWalletSigner";
 import { SealWalrusService } from "../services/sealWalrusService";
@@ -158,8 +162,7 @@ const SettingsPage = () => {
     email: "",
     phone: "",
     patientId: "",
-    bloodType: "",
-    allergies: "",
+    profileImage: "",
   };
 
   // Profile form state
@@ -170,6 +173,13 @@ const SettingsPage = () => {
   const [hasChanges, setHasChanges] = useState(false);
   const [originalData, setOriginalData] = useState(defaultProfileData);
   const [dataInitialized, setDataInitialized] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{
+    email?: string;
+    phone?: string;
+  }>({});
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [originalProfileImage, setOriginalProfileImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Check if profile exists and load profile data
   const packageId = import.meta.env.VITE_SUI_PACKAGE_ID || "";
@@ -188,9 +198,12 @@ const SettingsPage = () => {
     isLoading: isProfileLoading,
     profileData: blockchainProfileData,
     walrusId,
+    recordsId,
+    profileObjectId,
   } = usePatientProfile(packageId);
   const account = useCurrentAccount();
   const { currentWallet } = useCurrentWallet();
+  const { mutateAsync: signAndExecuteTransaction } = useSignAndExecuteTransaction();
   // Use useSuiClient to get the client from the provider (with correct network)
   const suiClientFromProvider = useSuiClient();
 
@@ -236,22 +249,33 @@ const SettingsPage = () => {
       );
       const profileWalrusId = walrusId || storedWalrusId;
 
-      if (profileWalrusId) {
+      if (profileWalrusId && profileObjectId && recordsId) {
         try {
           const walrusProfileData = await sealWalrusService.loadProfile(
             profileWalrusId,
-            account.address
+            account.address,
+            profileObjectId,
+            recordsId,
+            walletSigner
           );
 
           if (walrusProfileData) {
             const mergedData = {
               ...defaultProfileData,
-              ...walrusProfileData,
+              fullName: walrusProfileData.fullName || defaultProfileData.fullName,
+              email: walrusProfileData.email || defaultProfileData.email,
+              phone: walrusProfileData.phone || defaultProfileData.phone,
               patientId:
                 walrusProfileData.patientId || defaultProfileData.patientId,
+              profileImage: walrusProfileData.profileImage || defaultProfileData.profileImage,
             };
             setProfileData(mergedData);
             setOriginalData(mergedData);
+            // Set profile image if it exists
+            if (walrusProfileData.profileImage) {
+              setProfileImage(walrusProfileData.profileImage);
+              setOriginalProfileImage(walrusProfileData.profileImage);
+            }
             setDataInitialized(true);
             return;
           }
@@ -267,16 +291,26 @@ const SettingsPage = () => {
       ) {
         const mergedData = {
           ...defaultProfileData,
-          ...blockchainProfileData,
+          fullName: blockchainProfileData.fullName || defaultProfileData.fullName,
+          email: blockchainProfileData.email || defaultProfileData.email,
+          phone: blockchainProfileData.phone || defaultProfileData.phone,
           patientId:
             blockchainProfileData.patientId || defaultProfileData.patientId,
+          profileImage: (blockchainProfileData as any).profileImage || defaultProfileData.profileImage,
         };
         setProfileData(mergedData);
         setOriginalData(mergedData);
+        // Set profile image if it exists
+        if ((blockchainProfileData as any).profileImage) {
+          setProfileImage((blockchainProfileData as any).profileImage);
+          setOriginalProfileImage((blockchainProfileData as any).profileImage);
+        }
         setDataInitialized(true);
       } else if (!hasProfile && !isProfileLoading) {
         setProfileData(defaultProfileData);
         setOriginalData(defaultProfileData);
+        setProfileImage(null);
+        setOriginalProfileImage(null);
         setDataInitialized(true);
       }
     };
@@ -292,17 +326,106 @@ const SettingsPage = () => {
     sealWalrusService,
     account?.address,
     currentWallet,
+    profileObjectId,
+    recordsId,
+    walletSigner,
   ]);
 
-  // Handle input changes
+  // Validate email format
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Validate phone number (only numbers, +, -, spaces, parentheses)
+  const validatePhone = (phone: string): boolean => {
+    // Allow numbers, +, -, spaces, parentheses
+    const phoneRegex = /^[\d\s\+\-\(\)]*$/;
+    return phoneRegex.test(phone);
+  };
+
+  // Handle input changes with validation
   const handleInputChange = (field: string, value: string) => {
-    setProfileData((prev) => ({ ...prev, [field]: value }));
-    setHasChanges(true);
+    // Clear previous validation error for this field
+    setValidationErrors((prev) => ({ ...prev, [field]: undefined }));
+
+    if (field === "phone") {
+      // Only allow numbers, +, -, spaces, and parentheses
+      if (value === "" || validatePhone(value)) {
+        setProfileData((prev) => ({ ...prev, [field]: value }));
+        setHasChanges(true);
+      }
+    } else if (field === "email") {
+      setProfileData((prev) => ({ ...prev, [field]: value }));
+      setHasChanges(true);
+      // Validate email on blur or when user finishes typing
+      if (value && !validateEmail(value)) {
+        setValidationErrors((prev) => ({
+          ...prev,
+          email: "Please enter a valid email address",
+        }));
+      }
+    } else {
+      setProfileData((prev) => ({ ...prev, [field]: value }));
+      setHasChanges(true);
+    }
+  };
+
+  // Handle email blur to validate
+  const handleEmailBlur = () => {
+    if (profileData.email && !validateEmail(profileData.email)) {
+      setValidationErrors((prev) => ({
+        ...prev,
+        email: "Please enter a valid email address",
+      }));
+    }
+  };
+
+  // Handle profile image upload
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file.");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image size should be less than 5MB.");
+      return;
+    }
+
+    // Read file as data URL for preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfileImage(reader.result as string);
+      setHasChanges(true);
+    };
+    reader.onerror = () => {
+      alert("Error reading image file.");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Trigger file input when button is clicked
+  const handleChangePhotoClick = () => {
+    if (isEditing && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   // Start editing
   const handleEdit = () => {
+    // Prevent editing if profile already exists on-chain
+    if (hasProfile) {
+      alert("Profile can only be created and edited once. Editing is disabled.");
+      return;
+    }
     setOriginalData(profileData);
+    setOriginalProfileImage(profileImage);
     setIsEditing(true);
     setHasChanges(false);
   };
@@ -310,6 +433,7 @@ const SettingsPage = () => {
   // Cancel editing
   const handleCancel = () => {
     setProfileData(originalData);
+    setProfileImage(originalProfileImage);
     setIsEditing(false);
     setHasChanges(false);
   };
@@ -321,25 +445,48 @@ const SettingsPage = () => {
       return;
     }
 
+    // Validate email before saving
+    if (profileData.email && !validateEmail(profileData.email)) {
+      setValidationErrors({ email: "Please enter a valid email address" });
+      alert("Please enter a valid email address before saving.");
+      return;
+    }
+
+    // Validate phone format
+    if (profileData.phone && !validatePhone(profileData.phone)) {
+      setValidationErrors({ phone: "Phone number can only contain numbers and formatting characters (+, -, spaces, parentheses)" });
+      alert("Please enter a valid phone number.");
+      return;
+    }
+
     setIsSaving(true);
     try {
       if (!walletSigner) {
         throw new Error("Wallet signer not available. Please ensure your wallet is connected.");
       }
 
+      // Prepare profile data for saving (exclude health information fields)
+      const profileDataToSave = {
+        fullName: profileData.fullName,
+        email: profileData.email,
+        phone: profileData.phone,
+        patientId: profileData.patientId || account.address,
+        bloodType: "",
+        allergies: "",
+        profileImage: profileImage || "",
+      };
+
       // Encrypt and save to Walrus
       const { walrusId: newWalrusId, backupKey } =
         await sealWalrusService.saveProfile(
-          profileData,
+          profileDataToSave,
           account.address,
           walletSigner,
           2, // threshold
           3 // epochs
         );
 
-      // TODO: Store walrusId in on-chain Profile object
-      // For now, we'll store it in localStorage as a temporary solution
-      // In production, you should create/update a Profile object on-chain with the walrusId
+      // Store walrusId in localStorage
       if (newWalrusId) {
         localStorage.setItem(`walrusId_${account.address}`, newWalrusId);
         if (backupKey) {
@@ -350,7 +497,53 @@ const SettingsPage = () => {
         }
       }
 
+      // Call create_profile after saving to walrus
+      if (newWalrusId && packageId) {
+        try {
+          console.log("Calling create_profile after saving to walrus...");
+          
+          // Normalize packageId to ensure it has 0x prefix
+          const normalizedPackageId = packageId.trim().startsWith('0x') 
+            ? packageId.trim() 
+            : `0x${packageId.trim()}`;
+          
+          // Convert walrusId (string) to vector<u8> (bytes)
+          const profileCidBytes = Array.from(new TextEncoder().encode(newWalrusId));
+          
+          // Create transaction to call create_profile
+          const tx = new Transaction();
+          
+          // Clock object ID (standard Sui Clock object)
+          const clockObjectId = "0x6";
+          
+          tx.moveCall({
+            target: `${normalizedPackageId}::patients::create_profile`,
+            arguments: [
+              tx.pure.vector("u8", profileCidBytes),
+              tx.object(clockObjectId), // Clock object
+            ],
+          });
+
+          // Sign and execute the transaction
+          const result = await signAndExecuteTransaction({
+            transaction: tx,
+          });
+
+          console.log("create_profile called successfully:", result.digest);
+        } catch (error) {
+          console.error("Error calling create_profile:", error);
+          // Don't fail the entire save if on-chain call fails
+          // The profile is already saved to Walrus
+          alert(
+            `Profile saved to Walrus, but failed to call create_profile: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`
+          );
+        }
+      }
+
       setOriginalData(profileData);
+      setOriginalProfileImage(profileImage);
       setIsEditing(false);
       setHasChanges(false);
 
@@ -392,7 +585,32 @@ const SettingsPage = () => {
             </strong>
             <p style={{ margin: 0, fontSize: "0.875rem", color: "#666" }}>
               You need to set up your patient profile to continue using MedLock.
-              Please fill out the information below to create your profile.
+              Please fill out the information below to create your profile. Note: Your profile can only be created and edited once.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Profile Locked Alert */}
+      {!isProfileLoading && hasProfile && (
+        <div
+          style={{
+            backgroundColor: "#e0f2fe",
+            border: "1px solid #0ea5e9",
+            borderRadius: "8px",
+            padding: "1rem",
+            marginBottom: "1.5rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem",
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <strong style={{ display: "block", marginBottom: "0.5rem" }}>
+              Profile Locked
+            </strong>
+            <p style={{ margin: 0, fontSize: "0.875rem", color: "#666" }}>
+              Your profile has been created on-chain and is now locked. Profile can only be created and edited once for security purposes.
             </p>
           </div>
         </div>
@@ -432,7 +650,13 @@ const SettingsPage = () => {
               <button
                 className="field-action-btn"
                 onClick={handleEdit}
-                style={{ margin: 0 }}
+                disabled={hasProfile}
+                style={{ 
+                  margin: 0,
+                  opacity: hasProfile ? 0.6 : 1,
+                  cursor: hasProfile ? "not-allowed" : "pointer",
+                }}
+                title={hasProfile ? "Profile can only be created and edited once. Editing is disabled." : ""}
               >
                 <Settings size={14} style={{ marginRight: "0.5rem" }} />
                 Edit Profile
@@ -469,19 +693,41 @@ const SettingsPage = () => {
           </div>
 
           <div className="profile-header">
-            <div className="initial-circle">
-              {profileData.fullName
-                ? profileData.fullName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()
-                    .slice(0, 2)
-                : "??"}
-            </div>
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt="Profile"
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <div className="initial-circle">
+                {profileData.fullName
+                  ? profileData.fullName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()
+                      .slice(0, 2)
+                  : "??"}
+              </div>
+            )}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{ display: "none" }}
+            />
             <button
               className="change-photo-btn"
               disabled={!isEditing}
+              onClick={handleChangePhotoClick}
+              type="button"
               style={{
                 opacity: isEditing ? 1 : 0.6,
                 cursor: isEditing ? "pointer" : "not-allowed",
@@ -498,6 +744,8 @@ const SettingsPage = () => {
               value={profileData.fullName}
               readOnly={!isEditing}
               onChange={(e) => handleInputChange("fullName", e.target.value)}
+              placeholder="Enter your full name"
+              required
               style={{
                 cursor: isEditing ? "text" : "not-allowed",
                 backgroundColor: isEditing ? "white" : "#f9fafb",
@@ -513,18 +761,38 @@ const SettingsPage = () => {
                 value={profileData.email}
                 readOnly={!isEditing}
                 onChange={(e) => handleInputChange("email", e.target.value)}
+                onBlur={handleEmailBlur}
+                placeholder="Enter your email address"
+                required
                 style={{
                   cursor: isEditing ? "text" : "not-allowed",
                   backgroundColor: isEditing ? "white" : "#f9fafb",
+                  borderColor: validationErrors.email ? "#ef4444" : undefined,
                 }}
               />
-              <span className="verified">
-                <Check size={14} /> Verified
-              </span>
+              {profileData.email && 
+               !validationErrors.email && 
+               validateEmail(profileData.email) && (
+                <span className="verified">
+                  <Check size={14} /> Verified
+                </span>
+              )}
               {!isEditing && (
                 <button className="field-action-btn">Change</button>
               )}
             </div>
+            {validationErrors.email && (
+              <small
+                style={{
+                  display: "block",
+                  marginTop: "0.25rem",
+                  color: "#ef4444",
+                  fontSize: "0.75rem",
+                }}
+              >
+                {validationErrors.email}
+              </small>
+            )}
           </div>
 
           <div className="settings-field">
@@ -535,26 +803,72 @@ const SettingsPage = () => {
                 value={profileData.phone}
                 readOnly={!isEditing}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
+                onKeyDown={(e) => {
+                  // Prevent typing letters and special characters except allowed ones
+                  if (!isEditing) return;
+                  const allowedKeys = [
+                    "Backspace",
+                    "Delete",
+                    "Tab",
+                    "Escape",
+                    "Enter",
+                    "ArrowLeft",
+                    "ArrowRight",
+                    "ArrowUp",
+                    "ArrowDown",
+                    "Home",
+                    "End",
+                  ];
+                  const allowedChars = /[\d\s\+\-\(\)]/;
+                  
+                  if (
+                    !allowedKeys.includes(e.key) &&
+                    !allowedChars.test(e.key) &&
+                    !e.ctrlKey &&
+                    !e.metaKey
+                  ) {
+                    e.preventDefault();
+                  }
+                }}
+                placeholder="Enter your phone number (numbers only)"
+                required
                 style={{
                   cursor: isEditing ? "text" : "not-allowed",
                   backgroundColor: isEditing ? "white" : "#f9fafb",
+                  borderColor: validationErrors.phone ? "#ef4444" : undefined,
                 }}
               />
-              <span className="verified">
-                <Check size={14} /> Verified
-              </span>
+              {profileData.phone && 
+               !validationErrors.phone && 
+               validatePhone(profileData.phone) && (
+                <span className="verified">
+                  <Check size={14} /> Verified
+                </span>
+              )}
               {!isEditing && (
                 <button className="field-action-btn">Change</button>
               )}
             </div>
+            {validationErrors.phone && (
+              <small
+                style={{
+                  display: "block",
+                  marginTop: "0.25rem",
+                  color: "#ef4444",
+                  fontSize: "0.75rem",
+                }}
+              >
+                {validationErrors.phone}
+              </small>
+            )}
           </div>
 
           <div className="settings-field">
-            <label>Patient ID</label>
+            <label>Wallet Address</label>
             <input
               type="text"
               className="readonly-input"
-              value={profileData.patientId}
+              value={account?.address || ""}
               readOnly
               style={{
                 cursor: "not-allowed",
@@ -569,65 +883,7 @@ const SettingsPage = () => {
                 fontSize: "0.75rem",
               }}
             >
-              Patient ID cannot be changed
-            </small>
-          </div>
-
-          <h3 className="section-title" style={{ marginTop: "25px" }}>
-            Health Information
-          </h3>
-
-          <div className="settings-field">
-            <label>Blood Type</label>
-            {isEditing ? (
-              <select
-                value={profileData.bloodType}
-                onChange={(e) => handleInputChange("bloodType", e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  borderRadius: "6px",
-                  border: "1px solid #d1d5db",
-                  fontSize: "1rem",
-                }}
-              >
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-              </select>
-            ) : (
-              <input
-                type="text"
-                value={profileData.bloodType}
-                readOnly
-                style={{
-                  cursor: "not-allowed",
-                  backgroundColor: "#f9fafb",
-                }}
-              />
-            )}
-          </div>
-
-          <div className="settings-field">
-            <label>Known Allergies</label>
-            <textarea
-              value={profileData.allergies}
-              readOnly={!isEditing}
-              onChange={(e) => handleInputChange("allergies", e.target.value)}
-              style={{
-                cursor: isEditing ? "text" : "not-allowed",
-                backgroundColor: isEditing ? "white" : "#f9fafb",
-                minHeight: "80px",
-                resize: "vertical",
-              }}
-            />
-            <small className="char-limit">
-              {profileData.allergies.length}/200 characters
+              Wallet address cannot be changed
             </small>
           </div>
 
@@ -722,6 +978,8 @@ const Dashboard = () => {
   const [isShareModalOpen, setShareModalOpen] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<string>("dashboard");
   const account = useCurrentAccount();
+  const { mutate: disconnect } = useDisconnectWallet();
+  const navigate = useNavigate();
 
   // Get package ID from environment variables
   const packageId = import.meta.env.VITE_SUI_PACKAGE_ID || "";
@@ -756,6 +1014,42 @@ const Dashboard = () => {
     });
     setTransactionModalOpen(true);
   };
+
+  const handleSignOut = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log("Sign out clicked");
+    
+    try {
+      // Clear any stored profile data from localStorage
+      if (account?.address) {
+        localStorage.removeItem(`walrusId_${account.address}`);
+        localStorage.removeItem(`backupKey_${account.address}`);
+        console.log("Cleared localStorage for address:", account.address);
+      }
+      
+      // Disconnect wallet
+      console.log("Calling disconnect...");
+      disconnect();
+      console.log("Disconnect called");
+      
+      // Redirect to login page after disconnecting
+      setTimeout(() => {
+        navigate("/login");
+      }, 100);
+    } catch (error) {
+      console.error("Error signing out:", error);
+      alert("Error signing out. Please try again.");
+    }
+  };
+
+  // Redirect to login if wallet is disconnected
+  useEffect(() => {
+    if (!account && !isProfileLoading) {
+      navigate("/login");
+    }
+  }, [account, isProfileLoading, navigate]);
 
   const [isTransactionModalOpen, setTransactionModalOpen] =
     useState<boolean>(false);
@@ -843,9 +1137,21 @@ const Dashboard = () => {
             <Settings size={18} /> Settings
           </a>
         </nav>
-        <a className="logout-link">
+        <button 
+          className="logout-link" 
+          onClick={handleSignOut}
+          type="button"
+          style={{ 
+            background: "none",
+            border: "none",
+            width: "100%",
+            textAlign: "left",
+            fontFamily: "inherit",
+            fontSize: "inherit",
+          }}
+        >
           <LogOut size={18} /> Sign Out
-        </a>
+        </button>
       </aside>
       <div>
         <header className="topbar">

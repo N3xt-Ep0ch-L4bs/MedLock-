@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useConnectWallet, useCurrentWallet, useWallets } from "@mysten/dapp-kit";
+import { useConnectWallet, useCurrentAccount, useWallets } from "@mysten/dapp-kit";
 import { isEnokiWallet, EnokiWallet, AuthProvider } from "@mysten/enoki";
 import MedLockLogo from "../assets/logo.png";
 import PatientIcon from "../assets/patient.png";
@@ -14,72 +14,50 @@ const Login = () => {
   const [step, setStep] = useState<number>(1);
   const [isConnecting, setIsConnecting] = useState(false);
   const navigate = useNavigate();
-  const { mutate: connectWallet } = useConnectWallet();
-  const { currentWallet, isConnected } = useCurrentWallet();
-  const wallets = useWallets();
+  const { mutate: connect } = useConnectWallet();
+  const currentAccount = useCurrentAccount();
+  const wallets = useWallets().filter(isEnokiWallet);
 
-  // Get Enoki wallets and find Google wallet
-  const googleWallet = useMemo(() => {
-    const enokiWallets = wallets.filter(isEnokiWallet);
-    const walletsByProvider = enokiWallets.reduce(
-      (map, wallet) => map.set(wallet.provider, wallet),
-      new Map<AuthProvider, EnokiWallet>()
-    );
-    return walletsByProvider.get("google");
-  }, [wallets]);
+  const walletsByProvider = wallets.reduce(
+    (map, wallet) => map.set(wallet.provider, wallet),
+    new Map<AuthProvider, EnokiWallet>(),
+  );
+
+  const googleWallet = walletsByProvider.get('google');
 
   // Navigate to appropriate dashboard after successful connection
   useEffect(() => {
-    if (isConnected && currentWallet && role) {
+    if (currentAccount && role) {
       setIsConnecting(false);
-      if (role === "Patient") {
-        navigate("/dashboard");
-      } else if (role === "Doctor") {
-        navigate("/doctor");
-      } else if (role === "Pharmacy") {
-        navigate("/pharmacy");
-      }
+      setTimeout(() => {
+        if (role === "Patient") {
+          navigate("/dashboard");
+        } else if (role === "Doctor") {
+          navigate("/doctor");
+        } else if (role === "Pharmacy") {
+          navigate("/pharmacy");
+        }
+      }, 100);
     }
-  }, [isConnected, currentWallet, role, navigate]);
+  }, [currentAccount, role, navigate]);
+
+  console.log('Current account:', currentAccount?.address);
 
   const goToIdentityStep = () => {
     if (!role) return; 
     setStep(2);
   };
 
-  const handleGoogleContinue = async () => {
+  const handleGoogleContinue = () => {
     if (!role) return;
     
     if (!googleWallet) {
-      alert("Google wallet is not available. Please check your Enoki configuration.");
       return;
     }
     
     setIsConnecting(true);
     
-    try {
-      // Connect to Enoki Google wallet - this will trigger Google OAuth flow
-      connectWallet(
-        {
-          wallet: googleWallet,
-        },
-        {
-          onSuccess: () => {
-            // Navigation will happen in useEffect when isConnected becomes true
-            console.log("Successfully connected to Enoki Google wallet");
-          },
-          onError: (error) => {
-            console.error("Failed to connect wallet:", error);
-            setIsConnecting(false);
-            alert("Failed to connect. Please try again.");
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error connecting wallet:", error);
-      setIsConnecting(false);
-      alert("An error occurred. Please try again.");
-    }
+    connect({ wallet: googleWallet });
   };
 
 

@@ -5,10 +5,14 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 5173, // Explicitly set port to avoid redirect_uri_mismatch
+    strictPort: false, // Allow fallback to next available port if 5173 is taken
+    // NOTE: COOP header removed - it blocks OAuth popups from communicating with parent window
+    // If WASM requires these headers, consider adding them only in production or for specific routes
     headers: {
-      // Ensure WASM files are served with correct MIME type
-      'Cross-Origin-Embedder-Policy': 'require-corp',
-      'Cross-Origin-Opener-Policy': 'same-origin',
+      // Removed COOP header to allow OAuth popups to work
+      // 'Cross-Origin-Embedder-Policy': 'require-corp',
+      // 'Cross-Origin-Opener-Policy': 'same-origin',
     },
     fs: {
       // Allow serving files from node_modules for WASM

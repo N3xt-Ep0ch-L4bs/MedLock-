@@ -48,14 +48,26 @@ VITE_SUI_PACKAGE_ID=your_package_id_here
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select an existing one
-3. Enable the Google+ API
+3. Enable the Google+ API (or Google Identity Services API)
 4. Go to "Credentials" → "Create Credentials" → "OAuth client ID"
 5. Configure the OAuth consent screen if prompted
 6. Select "Web application" as the application type
-7. Add authorized JavaScript origins:
-   - `http://localhost:5173` (for local development)
-   - Your production domain
-8. Copy the Client ID and add it to your `.env` file
+7. **IMPORTANT - Configure Authorized JavaScript origins:**
+   - Add `http://localhost:5173` (for local development)
+   - Add your production domain (e.g., `https://yourdomain.com`)
+   - Do NOT include trailing slashes
+8. **IMPORTANT - Configure Authorized redirect URIs:**
+   - Add `http://localhost:5173` (for local development)
+   - Add your production domain (e.g., `https://yourdomain.com`)
+   - Enoki may also require a specific callback URL - check Enoki documentation or your Enoki portal settings
+   - The redirect URI must exactly match what Enoki sends in the OAuth request
+9. Copy the Client ID and add it to your `.env` file
+
+**Troubleshooting:** If the popup opens but shows your home page instead of Google sign-in:
+- Verify both "Authorized JavaScript origins" and "Authorized redirect URIs" include your exact app URL
+- Check the browser console for redirect URI mismatch errors
+- Ensure there are no trailing slashes in the URLs
+- Wait a few minutes after saving changes in Google Cloud Console for them to propagate
 
 ## Network Configuration
 
