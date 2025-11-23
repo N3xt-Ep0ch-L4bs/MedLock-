@@ -384,7 +384,8 @@ export class SealWalrusService {
     userAddress: string,
     profileObjectId: string,
     recordsObjectId: string,
-    signer?: any
+    signer?: any,
+    onTransactionBuilt?: () => void
   ): Promise<ProfileData | null> {
     // CRITICAL: signer is required for Seal key servers to sign the session key certificate
     if (!signer) {
@@ -615,6 +616,11 @@ export class SealWalrusService {
         id,
         onlyTransactionKind: true,
       });
+
+      // Notify that transaction is built (stage 1 complete, stage 2 starting)
+      if (onTransactionBuilt) {
+        onTransactionBuilt();
+      }
 
       // IMPORTANT: Call fetchKeys BEFORE decrypt (as shown in Seal examples)
       // This fetches the decryption keys from key servers using the seal_approve transaction

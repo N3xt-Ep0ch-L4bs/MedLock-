@@ -6,11 +6,16 @@ import PharmacyHistory from "./pages/PharmacyHistory";
 import About from "./pages/about";
 import How from "./pages/how";
 import PharmacyDashboard from "./pages/pharmacy";
-import Dashboard from "./pages/dashboard";
+import Dashboard from "./pages/dashboard/index";
+import DashboardHome from "./pages/dashboard/DashboardHome";
+import DashboardRecords from "./pages/dashboard/DashboardRecords";
+import DashboardPrescriptions from "./pages/dashboard/DashboardPrescriptions";
+import DashboardShared from "./pages/dashboard/DashboardShared";
+import DashboardActivity from "./pages/dashboard/DashboardActivity";
+import DashboardSettings from "./pages/dashboard/DashboardSettings";
 import Support from "./pages/support";
-import "./App.css";
-import { Import } from "lucide-react";
 import LearnMore from "./pages/learnmore";
+import "./App.css";
 import { EnokiProvider } from "./providers/EnokiProvider";
 
 function App() {
@@ -25,7 +30,14 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/support" element={<Support />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />}>
+            <Route index element={<DashboardHome />} />
+            <Route path="records" element={<DashboardRecords />} />
+            <Route path="prescriptions" element={<DashboardPrescriptions />} />
+            <Route path="shared" element={<DashboardShared />} />
+            <Route path="activity" element={<DashboardActivity />} />
+            <Route path="settings" element={<DashboardSettings />} />
+          </Route>
           <Route path="/doctor" element={<Doctor />} />
           <Route path="/pharmacy" element={<PharmacyDashboard />} />
           <Route path="/pharmacyHistory" element={<PharmacyHistory />} />
