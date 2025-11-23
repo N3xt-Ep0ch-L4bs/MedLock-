@@ -7,7 +7,6 @@ import {
   File,
   Lock,
   Pill,
-  Plus,
   UserLock,
   UserX,
   XCircle,
@@ -28,40 +27,6 @@ import AishaDp from "../../assets/kile-dp.png";
 import JamesDp from "../../assets/lin-dp.png";
 import KileDp from "../../assets/aisha-dp.png";
 import "../dashboard.css";
-
-interface UploadRecordModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-function UploadRecordModal({ isOpen, onClose }: UploadRecordModalProps) {
-  if (!isOpen) return null;
-
-  return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="upload-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="close-btn" onClick={onClose}>
-          ×
-        </button>
-
-        <h2>Upload Health Record</h2>
-        <p className="subtitle">Your file will be encrypted before upload</p>
-
-        <div className="upload-box">
-          <div className="upload-icon">
-            <CloudUpload size={40} color="#3b82f6" />
-          </div>
-          <p className="upload-text">
-            <strong>Drag and drop your file here</strong>
-            <br />
-            <span>or click to browse</span>
-          </p>
-          <p className="upload-info">PDF, JPG, PNG — Max 50MB</p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 interface TransactionData {
   recipient: string;
@@ -123,7 +88,6 @@ const TransactionApprovalModal = ({
 };
 
 export default function DashboardHome() {
-  const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [isShareModalOpen, setShareModalOpen] = useState<boolean>(false);
   const [isTransactionModalOpen, setTransactionModalOpen] = useState<boolean>(false);
   const [pendingTransaction, setPendingTransaction] = useState<TransactionData | null>(null);
@@ -138,21 +102,15 @@ export default function DashboardHome() {
   };
 
   return (
-    <>
+    <div className="page-container">
       <div className="welcome-card">
         <div className="welcome-text">
           <h2>Good afternoon, Ezekiel 👋</h2>
           <p>Your health data is secure and encrypted</p>
         </div>
-        <button
-          className="upload-btn"
-          onClick={() => setModalOpen(true)}
-        >
-          <Plus size={16} /> Upload New Record
-        </button>
       </div>
 
-      <div className="caads">
+      <div>
         <div className="stats-container">
           <div className="stat-card">
             <img src={RecordIcon} />
@@ -308,10 +266,12 @@ export default function DashboardHome() {
           </div>
         </div>
       </div>
-      <section className="prescriptions-section">
+      <section className="prescriptions-section" style={{ marginTop: "2rem" }}>
         <div className="section-header">
-          <h3>Active Prescriptions</h3>
-          <a href="#" className="view-all">
+          <div>
+            <h3 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 600, color: "#111827" }}>Active Prescriptions</h3>
+          </div>
+          <a href="/dashboard/prescriptions" className="view-all">
             View All Prescriptions →
           </a>
         </div>
@@ -393,8 +353,10 @@ export default function DashboardHome() {
           </div>
         </div>
       </section>
-      <section className="doctors-access">
-        <h3>Doctors with Access</h3>
+      <section className="doctors-access" style={{ marginTop: "2rem" }}>
+        <div style={{ marginBottom: "1.5rem" }}>
+          <h3 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 600, color: "#111827" }}>Doctors with Access</h3>
+        </div>
 
         <div className="doctor-access-grid">
           <div className="doctor-card">
@@ -471,10 +433,12 @@ export default function DashboardHome() {
 
       <section className="recent-activity">
         <div className="recent-heading">
-          <h3>Recent Activity</h3>
-          <a href="#" className="view-all">
-            View All Activity →
-          </a>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+            <h3>Recent Activity</h3>
+            <a href="/dashboard/activity" className="view-all">
+              View All Activity →
+            </a>
+          </div>
         </div>
 
         <div className="activity-timeline">
@@ -549,15 +513,11 @@ export default function DashboardHome() {
         onClose={() => setTransactionModalOpen(false)}
         transaction={pendingTransaction}
       />
-      <UploadRecordModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-      />
       <GrantAccess
         isOpen={isShareModalOpen}
         onClose={() => setShareModalOpen(false)}
       />
-    </>
+    </div>
   );
 }
 

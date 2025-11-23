@@ -409,13 +409,17 @@ const DoctorDashboard = () => {
   return (
     <div className="dashboard">
       <aside className="sidebar">
+        <div className="sidebar-header">
+          <img src={Logo} alt="MedLock Logo" style={{ width: "26px", height: "26px" }} />
+          <h1>MedLock</h1>
+        </div>
         <nav className="sidebar-nav">
           <div className={`sidebar-link ${activePage==="dashboard"?"active":""}`} onClick={()=>setActivePage("dashboard")}><Grid2x2 width={16}/> Dashboard</div>
           <div className={`sidebar-link ${activePage==="patients"?"active":""}`} onClick={()=>setActivePage("patients")}><Users width={16}/> Patients</div>
           <div className={`sidebar-link ${activePage==="prescriptions"?"active":""}`} onClick={()=>setActivePage("prescriptions")}><Pill width={16}/> Prescriptions</div>
           <div className={`sidebar-link ${activePage==="settings"?"active":""}`} onClick={()=>setActivePage("settings")}><Settings width={16}/> Settings</div>
         </nav>
-        <div className="doctor-info">
+        <div className="doctor-info" style={{ marginTop: "auto", padding: "1rem", borderTop: "1px solid #e5e7eb" }}>
           <h4>Dr. Aisha Mahmoud</h4>
           <p>Cardiologist</p>
           <small className="small-muted">ID: DOC-1647</small>
@@ -424,18 +428,26 @@ const DoctorDashboard = () => {
 
       <main className="main-area">
         <header className="doctor-topbar">
-          <div className="sidebar-header">
-            <img src={Logo} alt="logo"/>
-            <div>
-              <h1>MedLock</h1>
-              <p>Doctor</p>
+          <h2 style={{ 
+            fontSize: "1.5rem",
+            fontWeight: 600,
+            color: "#111827",
+            fontFamily: '"Figtree", sans-serif',
+            margin: 0,
+          }}>
+            {activePage === "dashboard" ? "Dashboard" : activePage === "prescriptions" ? "Prescriptions" : activePage === "patients" ? "Patients" : "Settings"}
+          </h2>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div className="search-bar" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <input type="text" placeholder="Search patients by name or ID" style={{ border: "none", outline: "none", background: "transparent", flex: 1, fontSize: "14px" }}/>
             </div>
+            <button className="filter-btn">Filter</button>
           </div>
-          <input type="text" placeholder="Search patients by name or ID" className="search-bar"/>
-          <button className="filter-btn">Filter</button>
         </header>
 
-        {mainContent}
+        <div style={{ padding: "2rem 2.5rem", width: "100%", boxSizing: "border-box" }}>
+          {mainContent}
+        </div>
       </main>
     </div>
   );

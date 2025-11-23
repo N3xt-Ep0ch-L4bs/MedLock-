@@ -83,7 +83,7 @@ const Dashboard = () => {
               fontWeight: 700,
               color: "#111827",
               marginBottom: "1rem",
-              fontFamily: '"Plus Jakarta Sans", sans-serif',
+              fontFamily: '"Figtree", sans-serif',
             }}>
               MedLock
             </h1>

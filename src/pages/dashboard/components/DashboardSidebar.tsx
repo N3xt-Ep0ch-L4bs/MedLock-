@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import Logo from "../../../assets/logo.png";
 import "../../dashboard.css";
 
 export const DashboardSidebar = () => {
@@ -50,6 +51,10 @@ export const DashboardSidebar = () => {
 
   return (
     <aside className="sidebar">
+      <div className="sidebar-header" style={{ padding: "14px 1.25rem", borderBottom: "1px solid #e5e7eb", minHeight: "62px", display: "flex", alignItems: "center", boxSizing: "border-box" }}>
+        <img src={Logo} alt="MedLock Logo" className="sidebar-logo" />
+        <h1 className="sidebar-title" style={{ margin: 0, lineHeight: "1.5rem", fontSize: "1.5rem" }}>MedLock</h1>
+      </div>
       <nav className="sidebar-nav">
         <NavLink
           to="/dashboard"
@@ -102,31 +107,24 @@ export const DashboardSidebar = () => {
           <Activity size={18} /> Activity Log
         </NavLink>
 
-        <NavLink
-          to="/dashboard/settings"
-          className={({ isActive }) =>
-            `sidebar-link ${isActive ? "active" : ""}`
-          }
-          style={{ textDecoration: "none", display: "block" }}
-        >
-          <Settings size={18} /> Settings
-        </NavLink>
       </nav>
-      <button 
-        className="logout-link" 
-        onClick={handleSignOut}
-        type="button"
-        style={{ 
-          background: "none",
-          border: "none",
-          width: "100%",
-          textAlign: "left",
-          fontFamily: "inherit",
-          fontSize: "inherit",
-        }}
-      >
-        <LogOut size={18} /> Sign Out
-      </button>
+      <div style={{ marginTop: "auto", padding: "1rem", borderTop: "1px solid #e5e7eb" }}>
+        <button 
+          className="logout-link" 
+          onClick={handleSignOut}
+          type="button"
+          style={{ 
+            background: "none",
+            border: "none",
+            width: "100%",
+            textAlign: "left",
+            fontFamily: "inherit",
+            fontSize: "inherit",
+          }}
+        >
+          <LogOut size={18} /> Sign Out
+        </button>
+      </div>
     </aside>
   );
 };

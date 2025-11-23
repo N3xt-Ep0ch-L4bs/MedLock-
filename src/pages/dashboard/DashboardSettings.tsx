@@ -446,7 +446,7 @@ export const SettingsPage = () => {
   };
 
   return (
-    <div className="settings-container" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <div className="settings-container" style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
       {/* TITLE */}
       <h2 className="settings-page-title">Settings</h2>
 
@@ -501,24 +501,26 @@ export const SettingsPage = () => {
         </div>
       )}
 
-      {/* TABS */}
-      <div className="settings-tabs">
-        <button
-          className={activeTab === "personal" ? "active" : ""}
-          onClick={() => setActiveTab("personal")}
-        >
-          Personal
-        </button>
+      {/* SETTINGS CONTENT WRAPPER */}
+      <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+        {/* TABS */}
+        <div className="settings-tabs">
+          <button
+            className={activeTab === "personal" ? "active" : ""}
+            onClick={() => setActiveTab("personal")}
+          >
+            Personal
+          </button>
 
-        <button
-          className={activeTab === "preferences" ? "active" : ""}
-          onClick={() => setActiveTab("preferences")}
-        >
-          Preferences
-        </button>
-      </div>
+          <button
+            className={activeTab === "preferences" ? "active" : ""}
+            onClick={() => setActiveTab("preferences")}
+          >
+            Preferences
+          </button>
+        </div>
 
-      {activeTab === "personal" && (
+        {activeTab === "personal" && (
         <div className="settings-card">
           {/* Stage 1: Loading Profile Object - Show Spinner */}
           {isLoadingProfile && (
@@ -891,19 +893,20 @@ export const SettingsPage = () => {
         </div>
       )}
 
-      {/* FOOTER BUTTONS */}
-      <div className="settings-footer-actions">
-        <button className="download-btn">
-          <Download size={16} /> Download My Data
-        </button>
+        {/* FOOTER BUTTONS */}
+        <div className="settings-footer-actions">
+          <button className="download-btn">
+            <Download size={16} /> Download My Data
+          </button>
 
-        <button className="print-btn">
-          <Printer size={16} /> Print Health Summary
-        </button>
+          <button className="print-btn">
+            <Printer size={16} /> Print Health Summary
+          </button>
 
-        <button className="delete-btn">
-          <Trash2 size={16} /> Delete Account
-        </button>
+          <button className="delete-btn">
+            <Trash2 size={16} /> Delete Account
+          </button>
+        </div>
       </div>
     </div>
   );

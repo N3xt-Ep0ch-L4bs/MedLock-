@@ -119,11 +119,15 @@ useEffect(() => {
     <div className="pharmacy-dashboard">
       {/* HEADER */}
       <header className="pharmacy-header">
-        <div className="logo-section">
-          <img src={Logo} alt="MedLock Logo" className="logo" />
-          <h2>MedLock</h2>
-          <span className="portal-text">Pharmacy Portal</span>
-        </div>
+        <h2 style={{ 
+          fontSize: "1.5rem",
+          fontWeight: 600,
+          color: "#111827",
+          fontFamily: '"Figtree", sans-serif',
+          margin: 0,
+        }}>
+          Pharmacy Portal
+        </h2>
         <div className="user-section">
           <span className="username">Maria Rodriguez</span>
           <span className="roles">PharmD</span>
