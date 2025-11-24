@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { Building2, User, Pill, Plus, Search, Settings, Eye, Edit, Trash2 } from "lucide-react";
+import RegistrationModal from "../components/RegistrationModal";
 import "./organization.css";
 
 interface Doctor {
@@ -29,6 +30,8 @@ const OrganizationDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"overview" | "doctors" | "pharmacies">("overview");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [showDoctorModal, setShowDoctorModal] = useState<boolean>(false);
+  const [showPharmacyModal, setShowPharmacyModal] = useState<boolean>(false);
 
   // Mock data - in real app, this would come from API
   const doctors: Doctor[] = [
@@ -183,7 +186,15 @@ const OrganizationDashboard = () => {
             </div>
             <button
               className="org-add-btn"
-              onClick={() => navigate("/admin")}
+              onClick={() => {
+                if (activeTab === "doctors") {
+                  setShowDoctorModal(true);
+                } else if (activeTab === "pharmacies") {
+                  setShowPharmacyModal(true);
+                } else {
+                  setShowDoctorModal(true);
+                }
+              }}
             >
               <Plus size={18} />
               Add {activeTab === "doctors" ? "Doctor" : activeTab === "pharmacies" ? "Pharmacy" : "Member"}
@@ -237,12 +248,12 @@ const OrganizationDashboard = () => {
                   <h3>Quick Actions</h3>
                 </div>
                 <div className="org-actions-grid">
-                  <button className="org-action-card" onClick={() => navigate("/admin")}>
+                  <button className="org-action-card" onClick={() => setShowDoctorModal(true)}>
                     <Plus size={32} color="#4338ca" />
                     <h4>Register Doctor</h4>
                     <p>Add a new doctor to your organization</p>
                   </button>
-                  <button className="org-action-card" onClick={() => navigate("/admin")}>
+                  <button className="org-action-card" onClick={() => setShowPharmacyModal(true)}>
                     <Plus size={32} color="#4338ca" />
                     <h4>Register Pharmacy</h4>
                     <p>Add a new pharmacy to your organization</p>
@@ -317,7 +328,7 @@ const OrganizationDashboard = () => {
             <div className="org-list-view">
               <div className="org-list-header">
                 <h3>All Doctors ({filteredDoctors.length})</h3>
-                <button className="org-add-btn" onClick={() => navigate("/admin")}>
+                <button className="org-add-btn" onClick={() => setShowDoctorModal(true)}>
                   <Plus size={18} />
                   Add Doctor
                 </button>
@@ -383,7 +394,7 @@ const OrganizationDashboard = () => {
             <div className="org-list-view">
               <div className="org-list-header">
                 <h3>All Pharmacies ({filteredPharmacies.length})</h3>
-                <button className="org-add-btn" onClick={() => navigate("/admin")}>
+                <button className="org-add-btn" onClick={() => setShowPharmacyModal(true)}>
                   <Plus size={18} />
                   Add Pharmacy
                 </button>
@@ -446,6 +457,26 @@ const OrganizationDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Registration Modals */}
+      <RegistrationModal
+        isOpen={showDoctorModal}
+        onClose={() => setShowDoctorModal(false)}
+        type="doctor"
+        onSuccess={() => {
+          // Refresh data or show success message
+          console.log("Doctor registered successfully");
+        }}
+      />
+      <RegistrationModal
+        isOpen={showPharmacyModal}
+        onClose={() => setShowPharmacyModal(false)}
+        type="pharmacy"
+        onSuccess={() => {
+          // Refresh data or show success message
+          console.log("Pharmacy registered successfully");
+        }}
+      />
     </div>
   );
 };
