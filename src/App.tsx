@@ -14,6 +14,7 @@ import DashboardShared from "./pages/dashboard/DashboardShared";
 import DashboardActivity from "./pages/dashboard/DashboardActivity";
 import DashboardSettings from "./pages/dashboard/DashboardSettings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import OrganizationDashboard from "./pages/organization";
 import Support from "./pages/support";
 import LearnMore from "./pages/learnmore";
 import "./App.css";
@@ -42,6 +43,7 @@ function App() {
           <Route path="/doctor" element={<Doctor />} />
           <Route path="/pharmacy" element={<PharmacyDashboard />} />
           <Route path="/pharmacyHistory" element={<PharmacyHistory />} />
+          <Route path="/organization" element={<OrganizationDashboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </Router>

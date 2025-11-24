@@ -6,7 +6,8 @@ import MedLockLogo from "../assets/logo.png";
 import PatientIcon from "../assets/patient.png";
 import DoctorIcon from "../assets/doctor.png";
 import PharmacyIcon from "../assets/pharmacy.png";
-import LoginImage from "../assets/login-image.png"; 
+import LoginImage from "../assets/login-image.png";
+import { Building2 } from "lucide-react"; 
 import "./pages.css";
 
 const Login = () => {
@@ -36,6 +37,8 @@ const Login = () => {
           navigate("/doctor");
         } else if (role === "Pharmacy") {
           navigate("/pharmacy");
+        } else if (role === "Organization") {
+          navigate("/organization");
         }
       }, 100);
     }
@@ -119,6 +122,22 @@ const Login = () => {
                   <div>
                     <h4>Pharmacy</h4>
                     <span>Verify and dispense prescriptions</span>
+                  </div>
+                </div>
+                <span className="arrow">›</span>
+              </div>
+
+              <div
+                className={`specialty ${role === "Organization" ? "selected" : ""}`}
+                onClick={() => setRole("Organization")}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="role-left">
+                  <Building2 size={40} style={{ color: "#4338ca" }} />
+                  <div>
+                    <h4>Organization</h4>
+                    <span>Manage doctors and pharmacy profiles</span>
                   </div>
                 </div>
                 <span className="arrow">›</span>
